@@ -366,11 +366,13 @@ function ASMDeviceServiceLookup() {
     -H "Authorization: Bearer ${ACCESS_TOKEN}" | \
     jq -r --arg id "$assignedServerId" '.data[] | select(.id == $id) | .attributes.serverName')
 
-	#if sererName starts with EJ- then Service Name is UVA Enterprie Jamf
+	# Determine PlatformName based on serviceName prefix
 	if [[ "$serviceName" == EJ-* ]]; then
-    	PlatformName="UVA Enterprise Jamf"
+		PlatformName="UVA Enterprise Jamf"
+	elif [[ "$serviceName" == ITS-* ]]; then
+		PlatformName="ITS-JAMF"
 	else
-    	PlatformName="Platform Not Found"
+		PlatformName="Platform Not Found"
 	fi
 
 	#No Service name Found
