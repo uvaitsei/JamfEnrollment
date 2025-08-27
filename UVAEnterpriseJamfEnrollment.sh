@@ -109,14 +109,14 @@ function CurlNeededFiles() {
 	if test -f "$ASMAPI"
 	then
 		UpdateScriptLog "ASM API VARIABLES CHECK: $ASMAPI Detected"
-		ASMClientID=$(defaults read "$ASMAPI" ClientID 2>/dev/null)
-		ASMClientAssertion=$(defaults read "$ASMAPI" ClientAssertion 2>/dev/null)
-		ASMClientName=$(defaults read "$ASMAPI" ClientName 2>/dev/null)
+		ClientID=$(defaults read "$ASMAPI" ClientID 2>/dev/null)
+		ClientAssertion=$(defaults read "$ASMAPI" ClientAssertion 2>/dev/null)
+		ClientName=$(defaults read "$ASMAPI" ClientName 2>/dev/null)
 	else
 		UpdateScriptLog "ASM API VARIABLES CHECK: No ASM API Variables Detected Use Default Setting"
-		ASMClientID="Not Found"
-		ASMClientAssertion="Not Found"
-		ASMClientName="Not Found"
+		ClientID="Not Found"
+		ClientAssertion="Not Found"
+		ClientName="Not Found"
 	fi
 
 }
@@ -323,9 +323,6 @@ function SwiftDialogCheck() {
 
 function ASMDeviceServiceLookup() {
 
-	ClientID="SCHOOLAPI.ebe4ecc7-5f4c-4afa-94af-34f27a8dfb2c"
-	ClientAssertion="eyJhbGciOiJFUzI1NiIsImtpZCI6ImRiOTBmMTIzLTlkMzEtNDkxMC05MDUxLTBhNDhkMjA0Y2VlZiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJTQ0hPT0xBUEkuZWJlNGVjYzctNWY0Yy00YWZhLTk0YWYtMzRmMjdhOGRmYjJjIiwiYXVkIjoiaHR0cHM6Ly9hY2NvdW50LmFwcGxlLmNvbS9hdXRoL29hdXRoMi92Mi90b2tlbiIsImlhdCI6MTc1NjE0OTE0MCwiZXhwIjoxNzcxNzAxMTQwLCJqdGkiOiIwOTAwMmE1NC1iMWIyLTRiODktYjQ4OC0yYmU3YTUxZjRkZGQiLCJpc3MiOiJTQ0hPT0xBUEkuZWJlNGVjYzctNWY0Yy00YWZhLTk0YWYtMzRmMjdhOGRmYjJjIn0.XMfGDnlA876UILu50VAuQFzdKPJ3mXpnjU-6ii5jKIA5LrbZ2Fl2wBQ9XV43mm1ya2dxbPILcP7dyZndsN1heA"
-
 	# URL to test
 	URL="https://school.apple.com"
 
@@ -354,6 +351,8 @@ function ASMDeviceServiceLookup() {
     	exit 1
 	fi
 
+	SerialNumber=$(ioreg -rd1 -c IOPlatformExpertDevice | awk -F'"' '/IOPlatformSerialNumber/{print $4}')
+	UpdateScriptLog "ASM LOOKUP: Serial Number: $SerialNumber"	
 
 	# Get the assigned server ID for the device
 	assignedServerResponse=$(curl -s "https://api-school.apple.com/v1/orgDevices/$SerialNumber/relationships/assignedServer" \
