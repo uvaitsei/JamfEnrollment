@@ -1,0 +1,677 @@
+#!/bin/bash
+
+###########################################################################
+#Script Name	:UVA Enterprise Jamf - Enrollment                                                                 
+#Description	:				
+#				:				
+#				:		
+#				:                                                     
+#Author       	:Matt McChesney                                            
+#Email         	:mam5hs@virginia.edu
+#Organization	:UVA-ITS
+#Last Updated	:
+#Version		:1.0
+
+###########################################################################
+# Script Change History
+###########################################################################
+# 
+#
+#
+###########################################################################
+###########################################################################
+# Functions List
+###########################################################################
+# CreateLogFile
+# UpdateScriptLog
+# Check for System Support Variables
+# Check for Site Support Variables
+# Check for Device Support Variables
+# RootCheck
+# ToggleJamfLaunchDaemon
+# KillProcess
+# EnableCaffeinate
+# CheckforUVABranding
+# WaitForSetupAssis
+# WaitForFinder
+
+## Swift Dialog ##
+# SwiftDialogInstall
+# SwiftDialogCheck
+
+## API Functions ##
+# GenerateEncryptedString
+# DecryptString
+# CheckTokenExpiration
+# GetAccessToken
+# CheckTokenExpiration
+# InvalidateToken
+# GetComputerInfoFromAPI
+
+# ManagedPreferencesCheck
+# SendTeamsMessage
+# CleanUp
+
+
+#Verbose Mode True or False 
+VerboseMode="True"
+
+###########################################################################
+#Functions To Call Later (Remove any Unused)
+###########################################################################
+
+###########################################################################
+# Function : Create and Update Logs File
+###########################################################################
+
+# Logging Variables
+# USER LOG PATH /Users/username/Library/Logs/UVA/ITS-JAMF/
+# SYSTEM LOG PATH /var/log/
+ScriptName="UVA Enterprise Jamf - Enrollment"
+Title="Title"
+Summary="Summary"
+ScriptVersion="1.0"
+ScriptLogPath="/var/log/UVA-JAMF/"
+ScriptLogFile="UVA-Jamf-$ScriptName.log"
+ScriptLog="$ScriptLogPath$ScriptLogFile"
+TimeStamp=$(date +%Y-%m-%d\ %H:%M:%S)
+
+function CreateLogFile() {
+    if [[ ! -f "$ScriptLog" ]]; then
+		mkdir -p "$ScriptLogPath"
+        touch "$ScriptLog"
+		
+    fi
+}
+
+function UpdateScriptLog() {
+    echo -e "$TimeStamp - ${1}" | tee -a "${ScriptLog}"
+    webhookputput+=$(echo "$TimeStamp - ${1} <br>" )
+
+}
+
+###########################################################################
+#Curl Needed Files
+###########################################################################
+function CurlNeededFiles() {
+	
+	ASMAPI="/Library/Managed Preferences/uva.asmprod.plist"
+	#Check for the existense ofASM API Config File if not found curl it download it
+	if test -f "$ASMAPI"
+	then
+		UpdateScriptLog "ASM API CONFIG CHECK: $ASMAPI Detected"
+	else
+		UpdateScriptLog "ASM API CONFIG CHECK: No ASM API Config File Detected Downloading"
+		curl -L -o "/Library/Managed Preferences/uva.asmprod.plist" "https://raw.githubusercontent.com/uvaitsei/EEP-Jamf/main/Production/UVA%20Enterprise%20Jamf%20Enrollment/com.uvaasmprod.plist"
+	fi
+	
+	#Check for ASM API Variables
+	if test -f "$ASMAPI"
+	then
+		UpdateScriptLog "ASM API VARIABLES CHECK: $ASMAPI Detected"
+		ASMClientID=$(defaults read "$ASMAPI" ClientID 2>/dev/null)
+		ASMClientAssertion=$(defaults read "$ASMAPI" ClientAssertion 2>/dev/null)
+		ASMClientName=$(defaults read "$ASMAPI" ClientName 2>/dev/null)
+	else
+		UpdateScriptLog "ASM API VARIABLES CHECK: No ASM API Variables Detected Use Default Setting"
+		ASMClientID="Not Found"
+		ASMClientAssertion="Not Found"
+		ASMClientName="Not Found"
+	fi
+
+}
+
+
+###########################################################################
+# Check for System Support Variables
+###########################################################################
+function CheckSystemSupportVariables() {
+	
+	SystemSupport="/Library/Managed Preferences/uva.enterprisejamfsystem.com.plist"
+
+	if test -f "$SystemSupport"
+	then
+		UpdateScriptLog "SYSTEM SUPPORT VARIABLES CHECK: $SystemSupport Detected"
+		#JAMF VARIABLES
+		URL=$(defaults read "$SystemSupport" JSSURL 2>/dev/null)
+		JAMFBINARY=$(defaults read "$SystemSupport" JAMFBINARY 2>/dev/null)
+		JSSID=$(defaults read "$SystemSupport" JSSID 2>/dev/null)
+
+		UpdateScriptLog "SYSTEM SUPPORT VARIABLES CHECK:: Found JSSURL for this device: $URL"
+		UpdateScriptLog "SYSTEM SUPPORT VARIABLES CHECK:: Found JAMFBINARY for this device: $JAMFBINARY"
+		UpdateScriptLog "SYSTEM SUPPORT VARIABLES CHECK:: Found JSSID for this device: $JSSID"
+
+		#API VARIABLES
+		Salt=$(defaults read "$SystemSupport" APIComputerRenameSalt 2>/dev/null)
+		#UpdateScriptLog "SYSTEM SUPPORT VARIABLES CHECK:: Found APIComputerRenameSalt for this device: $Salt"
+
+		#BRANDING VARIABLES
+		BannerImage=$(defaults read "$SystemSupport" BannerImage 2>/dev/null)
+		IconImage=$(defaults read "$SystemSupport" IconImage 2>/dev/null)
+	else
+		UpdateScriptLog "SYSTEM SUPPORT VARIABLES CHECK: No System Support Variables Detected Use Default Setting"
+		URL="Not Found"
+		JAMFBINARY="/usr/local/bin/jamf"
+		JSSID="Not Found"
+	fi
+}
+
+function CheckAPIaccesssVariables() {
+
+	#Check for API Access Variables for Computer Rename
+	ComputerRename="/Library/Managed Preferences/uva.enterprisejamfcomputerrename.com.plist"
+	if test -f "$ComputerRename"
+	then
+		UpdateScriptLog "COMPUTER RENAME VARIABLES CHECK: $ComputerRename Detected"
+		ClientID=$(defaults read "$ComputerRename" ClientID 2>/dev/null)
+		EncryptedString=$(defaults read "$ComputerRename" EncryptedString 2>/dev/null)
+		PassPhrase=$(defaults read "$ComputerRename" PassPhrase 2>/dev/null)
+		UpdateScriptLog "COMPUTER RENAME VARIABLES CHECK:: Found ClientID for this device: $ClientID"
+		UpdateScriptLog "COMPUTER RENAME VARIABLES CHECK:: Found EncryptedString for this device: $EncryptedString"
+		UpdateScriptLog "COMPUTER RENAME VARIABLES CHECK:: Found PassPhrase for this device: $PassPhrase"
+		if [[ -z "$ClientID" || -z "$EncryptedString" || -z "$PassPhrase" ]]; then
+			UpdateScriptLog "COMPUTER RENAME VARIABLES CHECK: One or more Computer Rename Variables are missing. Exiting Script"
+			exit 1
+		else
+			UpdateScriptLog "COMPUTER RENAME VARIABLES CHECK: All Computer Rename Variables Found"
+		fi
+	fi
+
+}
+
+
+###########################################################################
+# Function: Confirm script is running as root
+###########################################################################
+
+function RootCheck() {
+	if [[ $(id -u) -ne 0 ]]; then
+    	UpdateScriptLog "ROOT CHECK :ERROR: This script must be run as root; exiting."
+		SendTeamsMessage
+    	exit 1
+	fi
+}
+
+###########################################################################
+# Function: Kill Specific Processs
+###########################################################################
+function KillProcess() {
+	ProcessPid=$( pgrep -a "${1}")
+	if [ -n "$ProcessPid" ]; then
+		kill "$ProcessPid"
+		wait "$ProcessPid" 2>/dev/null
+		ProcessPid=$( pgrep -a "${1}")
+		if [ -z "$ProcessPid" ]; then
+			UpdateScriptLog "KILL PROCESS: $1 Terminated"
+		else
+            UpdateScriptLog "KILL PROCESS: ERROR: '$1' could not be terminated."
+        fi
+	else
+		UpdateScriptLog "KILL PROCESS: The '$1' process isn't running."
+	fi
+
+}
+
+
+###########################################################################
+# Function: Enable and Disable Caffeinate to Prevent Computer from Sleeping
+###########################################################################
+
+function EnableCaffeinate() {
+	ScriptPID="$$"
+	UpdateScriptLog "DISABLE SLEEP: Caffeinating this script (PID: $ScriptPID)"
+	caffeinate -dimsu -w $ScriptPID &
+}
+
+function DisableCaffeinate () {
+	UpdateScriptLog "ENABLE SLEEP: Disabling Caffinate"
+	KillProcess "caffeinate"
+}
+
+
+###########################################################################
+# Function: Wait for Setup Assistant to Finish
+###########################################################################
+
+function WaitForSetupAssistant() {
+
+	while pgrep -q -x "Setup Assistant"; do
+    	UpdateScriptLog "WAIT FOR SETUP ASSISTANT: Setup Assistant is still running; Waiting for 2 seconds"
+    	sleep 2
+	done
+
+	UpdateScriptLog "WAIT FOR SETUP ASSISTANT: Setup Assistant is no longer running; proceeding …"
+}
+
+###########################################################################
+# Function : Wait for Finder to Load
+###########################################################################
+
+function WaitForFinder() {
+
+	until pgrep -q -x "Finder" && pgrep -q -x "Dock"; do
+    	UpdateScriptLog "WAIT FOR FINDER: Finder & Dock are NOT running; Waiting for 1 second"
+    	sleep 1
+	done
+
+	UpdateScriptLog "WAIT FOR FINDER: Finder & Dock are running; proceeding …"
+}
+
+###########################################################################
+# Function : Current Logged in User
+###########################################################################
+
+function CurrentLoggedInUser() {
+    CurrentUser=$( echo "show State:/Users/ConsoleUser" | scutil | awk '/Name :/ { print $3 }' )
+    UpdateScriptLog "CURRENT USER: ${CurrentUser}"
+}
+
+###########################################################################
+# Function : Swift Dialog Intall for User Interactions
+###########################################################################
+swiftDialogMinimumRequiredVersion="2.3.2.4726"
+
+function SwiftDialogInstall() {
+
+    # Get the URL of the latest PKG From the Dialog GitHub repo
+    DialogURL=$(curl -L --silent --fail "https://api.github.com/repos/swiftDialog/swiftDialog/releases/latest" | awk -F '"' "/browser_download_url/ && /pkg\"/ { print \$4; exit }")
+
+    # Expected Team ID of the downloaded PKG
+    ExpectedDialogTeamID="PWA5E9TQ59"
+
+    UpdateScriptLog "SWIFT DIALOG INSTALL: Installing swiftDialog..."
+
+    # Create temporary working directory
+    WorkDirectory=$( /usr/bin/basename "$0" )
+    TempDirectory=$( /usr/bin/mktemp -d "/private/tmp/$WorkDirectory.XXXXXX" )
+
+    # Download the installer package
+    /usr/bin/curl --location --silent "$DialogURL" -o "$TempDirectory/Dialog.pkg"
+
+    # Verify the download
+    TeamID=$(/usr/sbin/spctl -a -vv -t install "$TempDirectory/Dialog.pkg" 2>&1 | awk '/origin=/ {print $NF }' | tr -d '()')
+
+    # Install the package if Team ID validates
+    if [[ "$ExpectedDialogTeamID" == "$TeamID" ]]; then
+
+        /usr/sbin/installer -pkg "$TempDirectory/Dialog.pkg" -target /
+        sleep 2
+        DialogVersion=$( /usr/local/bin/dialog --version )
+        UpdateScriptLog "SWIFT DIALOG INSTALL: swiftDialog version ${DialogVersion} installed; proceeding..."
+
+    else
+
+		UpdateScriptLog "SWIFT DIALOG INSTALL: Error Could Not Install"
+
+    fi
+
+    # Remove the temporary working directory when done
+    /bin/rm -Rf "$tempDirectory"
+
+}
+
+
+function SwiftDialogCheck() {
+
+
+    # Check for Dialog and install if not found
+    if [ ! -e "/Library/Application Support/Dialog/Dialog.app" ]; then
+
+        UpdateScriptLog "SWIFT DIALOG CHECK: swiftDialog not found. Installing..."
+        SwiftDialogInstall
+
+    else
+
+        DialogVersion=$(/usr/local/bin/dialog --version)
+        if [[ "${DialogVersion}" < "${SwiftDialogMinimumRequiredVersion}" ]]; then
+            
+            UpdateScriptLog "SWIFT DIALOG CHECK: swiftDialog version ${DialogVersion} found but swiftDialog ${SwiftDialogMinimumRequiredVersion} or newer is required; updating..."
+            SwiftDialogInstall
+            
+        else
+
+        UpdateScriptLog "SWIFT DIALOG CHECK: swiftDialog version ${dialogVersion} found; proceeding..."
+
+        fi
+    
+    fi
+
+}
+
+
+############################################################################
+# Apple School Manager Device Service Lookup
+############################################################################
+
+function ASMDeviceServiceLookup() {
+
+	ClientID="SCHOOLAPI.ebe4ecc7-5f4c-4afa-94af-34f27a8dfb2c"
+	ClientAssertion="eyJhbGciOiJFUzI1NiIsImtpZCI6ImRiOTBmMTIzLTlkMzEtNDkxMC05MDUxLTBhNDhkMjA0Y2VlZiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJTQ0hPT0xBUEkuZWJlNGVjYzctNWY0Yy00YWZhLTk0YWYtMzRmMjdhOGRmYjJjIiwiYXVkIjoiaHR0cHM6Ly9hY2NvdW50LmFwcGxlLmNvbS9hdXRoL29hdXRoMi92Mi90b2tlbiIsImlhdCI6MTc1NjE0OTE0MCwiZXhwIjoxNzcxNzAxMTQwLCJqdGkiOiIwOTAwMmE1NC1iMWIyLTRiODktYjQ4OC0yYmU3YTUxZjRkZGQiLCJpc3MiOiJTQ0hPT0xBUEkuZWJlNGVjYzctNWY0Yy00YWZhLTk0YWYtMzRmMjdhOGRmYjJjIn0.XMfGDnlA876UILu50VAuQFzdKPJ3mXpnjU-6ii5jKIA5LrbZ2Fl2wBQ9XV43mm1ya2dxbPILcP7dyZndsN1heA"
+
+	# URL to test
+	URL="https://school.apple.com"
+
+	UpdateScriptLog "ASM LOOKUP: Testing internet connectivity to $URL..."
+
+	# Use curl to follow redirects and check for any HTTP success code (2xx)
+	HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$URL")
+
+	if [[ "$HTTP_STATUS" -ge 200 && "$HTTP_STATUS" -lt 300 ]]; then
+    	UpdateScriptLog "ASM LOOKUP: Internet connection to Apple School Manager is reachable (HTTP $HTTP_STATUS)."
+	else
+    	UpdateScriptLog "ASM LOOKUP: Internet connection to Apple School Manager failed (HTTP $HTTP_STATUS). Check your network settings."
+    	exit 1
+	fi
+
+
+	ACCESS_TOKEN=$(curl -s -X POST \
+	-H 'Host: account.apple.com' \
+	-H 'Content-Type: application/x-www-form-urlencoded' \
+	--data "grant_type=client_credentials&client_id=${ClientID}&client_assertion_type=urn:ietf:params:oauth:client-assertion-type:jwt-bearer&client_assertion=${ClientAssertion}&scope=school.api" \
+	https://account.apple.com/auth/oauth2/token | jq -r '.access_token')
+
+
+	if [ -z "$ACCESS_TOKEN" ]; then
+    	UpdateScriptLog "ASM LOOKUP: Error: ACCESS_TOKEN is empty. Authentication failed."
+    	exit 1
+	fi
+
+
+	# Get the assigned server ID for the device
+	assignedServerResponse=$(curl -s "https://api-school.apple.com/v1/orgDevices/$SerialNumber/relationships/assignedServer" \
+    	-H "Authorization: Bearer ${ACCESS_TOKEN}")
+
+	# Extract the "id" value from the JSON response
+	assignedServerId=$(echo "$assignedServerResponse" | grep -o '"id" *: *"[^"]*"' | head -1 | cut -d':' -f2 | tr -d ' "')
+
+	#Get Server Name
+	serviceName=$(curl -s "https://api-school.apple.com/v1/mdmServers" \
+    -H "Authorization: Bearer ${ACCESS_TOKEN}" | \
+    jq -r --arg id "$assignedServerId" '.data[] | select(.id == $id) | .attributes.serverName')
+
+	#if sererName starts with EJ- then Service Name is UVA Enterprie Jamf
+	if [[ "$serviceName" == EJ-* ]]; then
+    	PlatformName="UVA Enterprise Jamf"
+	else
+    	PlatformName="Service Not Found"
+	fi
+
+	UpdateScriptLog "ASM LOOKUP: Service Name: $PlatformName"
+	UpdateScriptLog "ASM LOOKUP: Assigned Devcice Service Name: $serviceName"
+}
+
+############################################################################
+# Send Teams notification 
+############################################################################
+
+function SendTeamsMessage() {
+
+	if [[ $TeamsWebhookURL == "" ]]; then
+		UpdateScriptLog "WEBHOOK: No teams Webhook configured"
+		return
+	else
+        SerialNumber=$(ioreg -rd1 -c IOPlatformExpertDevice | awk -F'"' '/IOPlatformSerialNumber/{print $4}')
+        HostName=`hostname`	
+		jsonPayload='{
+		"@type": "MessageCard",
+		"@context": "http://schema.org/extensions",
+		"themeColor": "0076D7",
+		"summary": "'"$Summary"'",
+		"sections": [{
+			"activityTitle": "'"$Title"'",
+			"activityImage": "https://use1.ics.services.jamfcloud.com/icon/hash_943849af8d06181679bc9d792faac126bca7f0d57caa16b0991c58a17a59c6e1",
+			"facts": [{
+				"name": "Device Name:",
+				"value": "'"$HostName"'"
+			}, {
+				"name": "Serial Number",
+				"value": "'"$SerialNumber"'"
+			}, {
+				"name": "Jamf ID",
+				"value": "'"$ID"'"
+			}, {
+				"name": "Management ID",
+				"value": "'"$ManagedID"'"
+			}, {
+				"name": "Requested by:",
+				"value": "'"$CurrentUser"'"
+			}, {
+				"name": "Reason",
+				"value": "'"$Reason"'"
+			}, {
+				"name": "LAPS Username",
+				"value": "'"$LapsUser"'"
+			}, {
+				"name": "Time Viewed",
+				"value": "'"$TimeStamp"'"
+            }, {
+                "name": "Script Output",
+			    "value": "'"$webhookputput"'"
+			}],
+			"markdown": true
+		}],
+		"potentialAction": [{
+			"@type": "OpenUri",
+			"name": "Device Jamf Page",
+			"targets": [{
+				"os": "default",
+				"uri":
+				"'"https://itsemp.jamfcloud.com/computers.html?id=$ID&o=r"'"
+			}]
+		}]
+	}'
+    fi
+
+	# Send the JSON payload using curl
+	UpdateScriptLog "WEBHOOK: Send Teams WebHook"
+    curl -s -X POST -H "Content-Type: application/json" -d "$jsonPayload" "$TeamsWebhookURL" &> /dev/null
+	
+}
+
+############################################################################
+# Manual Enrollment Swift Dialog Display
+############################################################################
+
+function ManualEnrollment() {
+	
+	UpdateScriptLog "SWIFT DIALOG DISPLAY: Starting"
+
+	#Check Swift Dialog Version
+	DialogVersion=$( /usr/local/bin/dialog --version )
+	UpdateScriptLog "SWIFT DIALOG DISPLAY: Swift Dialog Version: $DialogVersion"
+	
+	EnrollmentInfo="### UVA Enterprise Jamf Manual Enrollment Instructions \
+	\n1. Open a web browser and go to the following URL: https://itsemp.jamfcloud.com/enroll \
+	\n2. When prompted, enter your UVA credentials to log in. \
+	\n3. Follow the on-screen instructions to download and install the MDM profile.\
+	\n4. Once the profile is installed, your device will be enrolled in UVA Enterprise Jamf. \
+	\n5. If you encounter any issues during the enrollment process, please contact the ITS Help Desk at (434) 924-HELP or helpdesk@virginia"
+
+	DialogBinary="/usr/local/bin/dialog"  
+
+	$DialogBinary \
+	--title "UVA Enterprise Jamf Manual Enrollment" \
+	--message "$EnrollmentInfo" \
+	--messagefont "size=16" \
+	--bannerimage "https://github.com/uvaitsei/JamfImages/blob/main/BANNERS/BLUEBACK-820-150.png?raw=true" \
+	--infotext "$ScriptName Version : $ScriptVersion" \
+	--ontop "true" \
+	--button1text "Ok" \
+	--titlefont "shadow=true, size=40" \
+	--height "800" 
+	
+	#Buttons
+    case $? in
+        0)
+        # Button 1 processing here
+        UpdateScriptLog "CERT INFO BUTTON: $CurrentUser Pressed (Ok)"
+		CleanUp
+		exit 0
+        ;;
+        *)
+        # No Button processing here
+        UpdateScriptLog "CERT INFO BUTTON: $CurrentUser Did not press (Cancel) or (Ok)"
+		CleanUp
+		exit 1
+        ;;
+    esac
+	
+}
+
+function AutomatedEnrollmentJamfEnrolled() {
+	
+	UpdateScriptLog "SWIFT DIALOG DISPLAY: Starting"
+
+	#Check Swift Dialog Version
+	DialogVersion=$( /usr/local/bin/dialog --version )
+	UpdateScriptLog "SWIFT DIALOG DISPLAY: Swift Dialog Version: $DialogVersion"
+	
+	EnrollmentInfo="### UVA Enterprise Jamf Automated Enrollment Instructions"
+
+	DialogBinary="/usr/local/bin/dialog"  
+
+	$DialogBinary \
+	--title "UVA Enterprise Jamf Automated Enrollment" \
+	--message "$EnrollmentInfo" \
+	--messagefont "size=16" \
+	--bannerimage "https://github.com/uvaitsei/JamfImages/blob/main/BANNERS/BLUEBACK-820-150.png?raw=true" \
+	--infotext "$ScriptName Version : $ScriptVersion" \
+	--ontop "true" \
+	--button1text "Ok" \
+	--titlefont "shadow=true, size=40" \
+	--height "800" 
+	
+	#Buttons
+    case $? in
+        0)
+        # Button 1 processing here
+        UpdateScriptLog "CERT INFO BUTTON: $CurrentUser Pressed (Ok)"
+		CleanUp
+		exit 0
+        ;;
+        *)
+        # No Button processing here
+        UpdateScriptLog "CERT INFO BUTTON: $CurrentUser Did not press (Cancel) or (Ok)"
+		CleanUp
+		exit 1
+        ;;
+    esac
+	
+}
+
+function AutomatedEnrollment() {
+	
+	UpdateScriptLog "SWIFT DIALOG DISPLAY: Starting"
+
+	#Check Swift Dialog Version
+	DialogVersion=$( /usr/local/bin/dialog --version )
+	UpdateScriptLog "SWIFT DIALOG DISPLAY: Swift Dialog Version: $DialogVersion"
+	
+	EnrollmentInfo="### UVA Enterprise Jamf Automated Enrollment Instructions"
+
+	DialogBinary="/usr/local/bin/dialog"  
+
+	$DialogBinary \
+	--title "UVA Enterprise Jamf Automated Enrollment" \
+	--message "$EnrollmentInfo" \
+	--messagefont "size=16" \
+	--bannerimage "https://github.com/uvaitsei/JamfImages/blob/main/BANNERS/BLUEBACK-820-150.png?raw=true" \
+	--infotext "$ScriptName Version : $ScriptVersion" \
+	--ontop "true" \
+	--button1text "Ok" \
+	--titlefont "shadow=true, size=40" \
+	--height "800" 
+	
+	#Buttons
+    case $? in
+        0)
+        # Button 1 processing here
+        UpdateScriptLog "CERT INFO BUTTON: $CurrentUser Pressed (Ok)"
+		CleanUp
+		exit 0
+        ;;
+        *)
+        # No Button processing here
+        UpdateScriptLog "CERT INFO BUTTON: $CurrentUser Did not press (Cancel) or (Ok)"
+		CleanUp
+		exit 1
+        ;;
+    esac
+	
+}
+
+
+############################################################################
+# Script Cleanup 
+############################################################################
+
+
+function CleanUp() {
+
+	#Add Any Cleanup Items Here. 
+	UpdateScriptLog "ClEANUP:"
+
+}
+
+function UpdateJamfInventory() {
+	#Update Jamf Inventory
+	UpdateScriptLog "UPDATE JAMF INVENTORY: Starting"
+	$JAMFBINARY recon
+	UpdateScriptLog "UPDATE JAMF INVENTORY: Completed"
+}
+
+
+############################################################################
+# Script Start
+############################################################################
+
+#Script Initilization
+###########################################################################
+CreateLogFile
+UpdateScriptLog "SCRIPT HEADER: $Title - $ScriptName - Version: $ScriptVersion : Start"
+EnableCaffeinate
+CheckSystemSupportVariables
+CheckAPIaccesssVariables
+RootCheck
+WaitForSetupAssistant
+WaitForFinder
+CurrentLoggedInUser
+SwiftDialogCheck
+
+##Script Functions
+
+#Curl Needed Files
+CurlNeededFiles
+
+#Check for Apple School Manager Device Service to determine if Automated Enrollment or Manual Enrollment	
+ASMDeviceServiceLookup
+if [[ "$PlatformName" == "UVA Enterprise Jamf" ]]; then
+	UpdateScriptLog "AUTOMATED DEVICE ENROLLMENT: This Computer is in UVA Enterprise Jamf Device Service"
+	UpdateScriptLog "AUTOMATED DEVICE ENROLLMENT: Use Automated Enrollment"
+	EnrollmentType="Automated"
+else
+	UpdateScriptLog "AUTOMATED DEVICE ENROLLMENT:: This Computer is NOT enrolled UVA Enterprise Jamf Device Services through Apple School Manager"
+	UpdateScriptLog "AUTOMATED DEVICE ENROLLMENT: Must Use Manual Enrollment"
+	EnrollmentType="Automated"
+fi
+
+
+if [[ "$EnrollmentType" == "Automated" ]]; then
+	UpdateScriptLog "AUTOMATED DEVICE ENROLLMENT: Start Automated Enrollment"
+	#Display Computer Information and Prompt for Enrollment
+	AutomatedEnrollment
+fi
+
+if [[ "$EnrollmentType" == "Manual" ]]; then
+	UpdateScriptLog "MANUAL DEVICE ENROLLMENT: Start Manual Enrollment"
+	#Display Computer Information and Prompt for Web Enrollment
+	ManualEnrollment
+fi
+
+
+#Script Finilization
+############################################################################
+DisableCaffeinate
+UpdateScriptLog "SCRIPT FOOTER: $Title - $ScriptName - Version: $ScriptVersion : End"
+SendTeamsMessage
+CleanUp

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>ClientName</key>
+    <string>UVA Production</string>
+    <key>ClientID</key>
+    <string>SCHOOLAPI.ebe4ecc7-5f4c-4afa-94af-34f27a8dfb2c</string>
+    <key>ClientAssertion</key>
+    <string>eyJhbGciOiJFUzI1NiIsImtpZCI6ImRiOTBmMTIzLTlkMzEtNDkxMC05MDUxLTBhNDhkMjA0Y2VlZiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJTQ0hPT0xBUEkuZWJlNGVjYzctNWY0Yy00YWZhLTk0YWYtMzRmMjdhOGRmYjJjIiwiYXVkIjoiaHR0cHM6Ly9hY2NvdW50LmFwcGxlLmNvbS9hdXRoL29hdXRoMi92Mi90b2tlbiIsImlhdCI6MTc1NjE0OTE0MCwiZXhwIjoxNzcxNzAxMTQwLCJqdGkiOiIwOTAwMmE1NC1iMWIyLTRiODktYjQ4OC0yYmU3YTUxZjRkZGQiLCJpc3MiOiJTQ0hPT0xBUEkuZWJlNGVjYzctNWY0Yy00YWZhLTk0YWYtMzRmMjdhOGRmYjJjIn0.XMfGDnlA876UILu50VAuQFzdKPJ3mXpnjU-6ii5jKIA5LrbZ2Fl2wBQ9XV43mm1ya2dxbPILcP7dyZndsN1heA</string>
+</dict>
+</plist>
