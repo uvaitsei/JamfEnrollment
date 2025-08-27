@@ -68,7 +68,7 @@ VerboseMode="True"
 # USER LOG PATH /Users/username/Library/Logs/UVA/ITS-JAMF/
 # SYSTEM LOG PATH /var/log/
 ScriptName="UVA Enterprise Jamf - Enrollment"
-Title="Title"
+Title="UVA Enterprise Jamf - Enrollment"
 Summary="Summary"
 ScriptVersion="1.0"
 ScriptLogPath="/var/log/UVA-JAMF/"
@@ -88,6 +88,59 @@ function UpdateScriptLog() {
     echo -e "$TimeStamp - ${1}" | tee -a "${ScriptLog}"
     webhookputput+=$(echo "$TimeStamp - ${1} <br>" )
 
+}
+
+function DialogUpdate() {
+    UpdateScriptLog "SWIFT DIALOG UPDATE: $1"
+    echo "$1" >> "$SwiftCommandFile"
+}
+
+function CreateSwiftDialogCommandFile() {
+    SwiftCommandDirectory="/var/tmp/SwiftCommand"
+    if [ -d "$SwiftCommandDirectory" ]; then
+        UpdateScriptLog "Swift Command Directory: Removing previous $SwiftCommandDirectory"
+        /bin/rm -fR $SwiftCommandDirectory
+        UpdateScriptLog "Swift Command Directory: Creating New $SwiftCommandDirectory"
+        mkdir $SwiftCommandDirectory
+    else 
+        UpdateScriptLog "Swift Command Directory: Creating $SwiftCommandDirectory"
+        mkdir $SwiftCommandDirectory
+    fi
+
+    SwiftCommandFile=$( mktemp $SwiftCommandDirectory/swiftcommand.XXX )
+    UpdateScriptLog "Swift Command File: $SwiftCommandFile"
+
+    # Set permissions for all users
+    chmod 644 $SwiftCommandFile
+    chmod 755 $SwiftCommandDirectory
+}
+
+
+function JamfEnrollment() {
+	
+	UpdateScriptLog "SWIFT DIALOG DISPLAY: Starting"
+
+	#Check Swift Dialog Version
+	DialogVersion=$( /usr/local/bin/dialog --version )
+	UpdateScriptLog "SWIFT DIALOG DISPLAY: Swift Dialog Version: $DialogVersion"
+	
+	DialogBinary="/usr/local/bin/dialog"  
+	
+	$DialogBinary \
+	--title "$Title" \
+	--message "Checking Enrolment Status" \
+	--messagefont "size=16" \
+	--bannerimage "https://github.com/uvaitsei/JamfImages/blob/main/BANNERS/BLUEBACK-820-150.png?raw=true" \
+	--infotext "$ScriptName Version : $ScriptVersion" \
+	--ontop "true" \
+	--button1disabled "true" \
+	--commandfile "$SwiftCommandFile" \
+	--titlefont "shadow=true, size=40" \
+	--progress "100" \
+	--progresstext "Checking for Enrollment Status" \
+	--height "300" \
+	&
+	
 }
 
 ###########################################################################
@@ -575,6 +628,7 @@ function UpdateJamfInventory() {
 ###########################################################################
 CreateLogFile
 UpdateScriptLog "SCRIPT HEADER: $Title - $ScriptName - Version: $ScriptVersion : Start"
+CreateSwiftDialogCommandFile
 EnableCaffeinate
 CheckSystemSupportVariables
 RootCheck
@@ -582,6 +636,7 @@ WaitForSetupAssistant
 WaitForFinder
 CurrentLoggedInUser
 SwiftDialogCheck
+JamfEnrollment
 
 ##Script Functions
 
@@ -593,6 +648,7 @@ ASMDeviceServiceLookup
 if [[ "$PlatformName" == "UVA Enterprise Jamf" ]]; then
 	UpdateScriptLog "AUTOMATED DEVICE ENROLLMENT: This Computer is in UVA Enterprise Jamf Device Service"
 	UpdateScriptLog "AUTOMATED DEVICE ENROLLMENT: Use Automated Enrollment"
+	
 	EnrollmentType="Automated"
 else
 	UpdateScriptLog "AUTOMATED DEVICE ENROLLMENT:: This Computer is NOT enrolled UVA Enterprise Jamf Device Services through Apple School Manager"
@@ -604,12 +660,18 @@ fi
 if [[ "$EnrollmentType" == "Automated" ]]; then
 	UpdateScriptLog "AUTOMATED DEVICE ENROLLMENT: Start Automated Enrollment"
 	#Display Computer Information and Prompt for Enrollment
+	DialogUpdate "progresstext: Automated Enrollment Available"
+	sleep 3
+	DialogUpdate "quit:"
 	AutomatedEnrollment
 fi
 
 if [[ "$EnrollmentType" == "Manual" ]]; then
 	UpdateScriptLog "MANUAL DEVICE ENROLLMENT: Start Manual Enrollment"
 	#Display Computer Information and Prompt for Web Enrollment
+	DialogUpdate "progresstext: Manual Enrollment Required"
+	sleep 3
+	DialogUpdate "quit:"
 	ManualEnrollment
 fi
 
