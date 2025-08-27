@@ -533,8 +533,8 @@ function AutomatedEnrollment() {
 	UpdateScriptLog "SWIFT DIALOG DISPLAY: Swift Dialog Version: $DialogVersion"
 	
 	EnrollmentInfo="### UVA Enterprise Jamf Automated Enrollment Instructions\
-	-Platorm Name: $PlatformName \
-	-Service Name: $serviceName"
+	Platorm Name: $PlatformName \
+	Service Name: $serviceName"
 
 	DialogBinary="/usr/local/bin/dialog"  
 
@@ -547,7 +547,7 @@ function AutomatedEnrollment() {
 	--ontop "true" \
 	--button1text "Ok" \
 	--titlefont "shadow=true, size=40" \
-	--height "800" 
+	--height "500" 
 	
 	#Buttons
     case $? in
