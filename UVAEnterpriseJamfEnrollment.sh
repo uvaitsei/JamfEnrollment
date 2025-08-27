@@ -533,6 +533,8 @@ function ASMDeviceServiceLookup() {
     -H "Authorization: Bearer ${ACCESS_TOKEN}" | \
     jq -r --arg id "$assignedServerId" '.data[] | select(.id == $id) | .attributes.serverName')
 
+	UpdateScriptLog "ASM LOOKUP: Assigned Devcice Service Name: $serviceName"
+
 	# Determine PlatformName based on serviceName prefix
 	if [[ "$serviceName" == EJ-* ]]; then
 		PlatformName="UVA Enterprise Jamf"
@@ -547,8 +549,8 @@ function ASMDeviceServiceLookup() {
 		serviceName="No Service Name Found"
 	fi	
 
-	UpdateScriptLog "ASM LOOKUP: Service Name: $PlatformName"
-	UpdateScriptLog "ASM LOOKUP: Assigned Devcice Service Name: $serviceName"
+	UpdateScriptLog "ASM LOOKUP: Platform Name: $PlatformName"
+	
 }
 
 ############################################################################
