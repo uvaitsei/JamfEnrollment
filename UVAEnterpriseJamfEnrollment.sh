@@ -168,8 +168,25 @@ function JamfEnrollmentAutmated() {
 	--height "300" \
 	&
 	
-	sleep 10
+	if [[ "$JamfEnrolled" == "True" ]]; then
+		DialogUpdate "progresstext: Removing Jamf Framework"
+		sleep 3
+		#Detect MDM Profile and wait for it to be removed
+		if /usr/local/bin/jamf removeFramework &> /dev/null; then
+			UpdateScriptLog "JAMF REMOVAL: Jamf Framework Removed"
+			DialogUpdate "progresstext: Jamf Framework Removed"
+			sleep 3
+		else
+			UpdateScriptLog "JAMF REMOVAL: ERROR: Jamf Framework Could Not be Removed"
+			DialogUpdate "progresstext: ERROR: Jamf Framework Could Not be Removed"
+			sleep 3
+		fi
+	fi
+
+	DialogUpdate "progresstext: Starting Automated Enrollment"
 	DialogUpdate quit:
+	profiles renew -type enrollment
+	
 
 }
 
