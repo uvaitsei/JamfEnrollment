@@ -128,7 +128,7 @@ function JamfEnrollment() {
 	
 	$DialogBinary \
 	--title "$Title" \
-	--message "Checking Enrolment Status" \
+	--message "Checking Enrollment Status" \
 	--messagefont "size=16" \
 	--bannerimage "https://github.com/uvaitsei/JamfImages/blob/main/BANNERS/BLUEBACK-820-150.png?raw=true" \
 	--infotext "$ScriptName Version : $ScriptVersion" \
@@ -533,7 +533,7 @@ function ManualEnrollment() {
 	--bannerimage "https://github.com/uvaitsei/JamfImages/blob/main/BANNERS/BLUEBACK-820-150.png?raw=true" \
 	--infotext "$ScriptName Version : $ScriptVersion" \
 	--ontop "true" \
-	--button1text "Ok" \
+	--button1text "Enroll" \
 	--titlefont "shadow=true, size=40" \
 	--height "800" 
 	
@@ -541,13 +541,13 @@ function ManualEnrollment() {
     case $? in
         0)
         # Button 1 processing here
-        UpdateScriptLog "CERT INFO BUTTON: $CurrentUser Pressed (Ok)"
+        UpdateScriptLog "CERT INFO BUTTON: $CurrentUser Pressed (Enroll"
 		CleanUp
 		exit 0
         ;;
         *)
         # No Button processing here
-        UpdateScriptLog "CERT INFO BUTTON: $CurrentUser Did not press (Cancel) or (Ok)"
+        UpdateScriptLog "CERT INFO BUTTON: $CurrentUser Did not press (Cancel) or (Enroll)"
 		CleanUp
 		exit 1
         ;;
@@ -585,13 +585,13 @@ function AutomatedEnrollment() {
     case $? in
         0)
         # Button 1 processing here
-        UpdateScriptLog "CERT INFO BUTTON: $CurrentUser Pressed (Ok)"
+        UpdateScriptLog "CERT INFO BUTTON: $CurrentUser Pressed (Enroll)"
 		CleanUp
 		exit 0
         ;;
         *)
         # No Button processing here
-        UpdateScriptLog "CERT INFO BUTTON: $CurrentUser Did not press (Cancel) or (Ok)"
+        UpdateScriptLog "CERT INFO BUTTON: $CurrentUser Did not press (Cancel) or (Enroll)"
 		CleanUp
 		exit 1
         ;;
@@ -645,17 +645,15 @@ CurlNeededFiles
 
 #Check for Apple School Manager Device Service to determine if Automated Enrollment or Manual Enrollment	
 ASMDeviceServiceLookup
-if [[ "$PlatformName" == "UVA Enterprise Jamf" ]]; then
-	UpdateScriptLog "AUTOMATED DEVICE ENROLLMENT: This Computer is in UVA Enterprise Jamf Device Service"
-	UpdateScriptLog "AUTOMATED DEVICE ENROLLMENT: Use Automated Enrollment"
-	
-	EnrollmentType="Automated"
-else
+if [ "$serviceName" = "No Service Name Found" ]; then
 	UpdateScriptLog "AUTOMATED DEVICE ENROLLMENT:: This Computer is NOT enrolled UVA Enterprise Jamf Device Services through Apple School Manager"
 	UpdateScriptLog "AUTOMATED DEVICE ENROLLMENT: Must Use Manual Enrollment"
 	EnrollmentType="Manual"
+else
+	UpdateScriptLog "AUTOMATED DEVICE ENROLLMENT: This Computer is in UVA Enterprise Jamf Device Service"
+	UpdateScriptLog "AUTOMATED DEVICE ENROLLMENT: Use Automated Enrollment"
+	EnrollmentType="Automated"
 fi
-
 
 if [[ "$EnrollmentType" == "Automated" ]]; then
 	UpdateScriptLog "AUTOMATED DEVICE ENROLLMENT: Start Automated Enrollment"
