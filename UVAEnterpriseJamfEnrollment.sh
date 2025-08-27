@@ -393,8 +393,13 @@ function ASMDeviceServiceLookup() {
 	if [[ "$serviceName" == EJ-* ]]; then
     	PlatformName="UVA Enterprise Jamf"
 	else
-    	PlatformName="Service Not Found"
+    	PlatformName="Platform Not Found"
 	fi
+
+	#No Service name Found
+	if [[ -z "$serviceName" ]]; then
+		serviceName="No Service Name Found"
+	fi	
 
 	UpdateScriptLog "ASM LOOKUP: Service Name: $PlatformName"
 	UpdateScriptLog "ASM LOOKUP: Assigned Devcice Service Name: $serviceName"
@@ -518,46 +523,6 @@ function ManualEnrollment() {
 	
 }
 
-function AutomatedEnrollmentJamfEnrolled() {
-	
-	UpdateScriptLog "SWIFT DIALOG DISPLAY: Starting"
-
-	#Check Swift Dialog Version
-	DialogVersion=$( /usr/local/bin/dialog --version )
-	UpdateScriptLog "SWIFT DIALOG DISPLAY: Swift Dialog Version: $DialogVersion"
-	
-	EnrollmentInfo="### UVA Enterprise Jamf Automated Enrollment Instructions"
-
-	DialogBinary="/usr/local/bin/dialog"  
-
-	$DialogBinary \
-	--title "UVA Enterprise Jamf Automated Enrollment" \
-	--message "$EnrollmentInfo" \
-	--messagefont "size=16" \
-	--bannerimage "https://github.com/uvaitsei/JamfImages/blob/main/BANNERS/BLUEBACK-820-150.png?raw=true" \
-	--infotext "$ScriptName Version : $ScriptVersion" \
-	--ontop "true" \
-	--button1text "Ok" \
-	--titlefont "shadow=true, size=40" \
-	--height "800" 
-	
-	#Buttons
-    case $? in
-        0)
-        # Button 1 processing here
-        UpdateScriptLog "CERT INFO BUTTON: $CurrentUser Pressed (Ok)"
-		CleanUp
-		exit 0
-        ;;
-        *)
-        # No Button processing here
-        UpdateScriptLog "CERT INFO BUTTON: $CurrentUser Did not press (Cancel) or (Ok)"
-		CleanUp
-		exit 1
-        ;;
-    esac
-	
-}
 
 function AutomatedEnrollment() {
 	
@@ -568,8 +533,8 @@ function AutomatedEnrollment() {
 	UpdateScriptLog "SWIFT DIALOG DISPLAY: Swift Dialog Version: $DialogVersion"
 	
 	EnrollmentInfo="### UVA Enterprise Jamf Automated Enrollment Instructions\
-	/nPlatorm Name: $PlatformName \
-	/nService Name: $serviceName"
+	-Platorm Name: $PlatformName \
+	-Service Name: $serviceName"
 
 	DialogBinary="/usr/local/bin/dialog"  
 
