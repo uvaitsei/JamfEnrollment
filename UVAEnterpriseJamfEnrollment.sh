@@ -143,7 +143,6 @@ function JamfEnrollment() {
 	
 }
 
-
 function JamfEnrollmentAutmated() {
 	
 	UpdateScriptLog "SWIFT DIALOG DISPLAY: Starting"
@@ -187,8 +186,8 @@ function JamfEnrollmentManual() {
 	DialogBinary="/usr/local/bin/dialog"  
 	
 	$DialogBinary \
-	--title "Guided Maanual Enrollment" \
-	--message "Checking Enrollment Status" \
+	--title "Guided Manual Enrollment" \
+	--message "Please follow the guided instructions" \
 	--messagefont "size=16" \
 	--bannerimage "https://github.com/uvaitsei/JamfImages/blob/main/BANNERS/BLUEBACK-820-150.png?raw=true" \
 	--infotext "$ScriptName Version : $ScriptVersion" \
@@ -197,14 +196,49 @@ function JamfEnrollmentManual() {
 	--commandfile "$SwiftCommandFile" \
 	--titlefont "shadow=true, size=40" \
 	--progress "100" \
-	--progresstext "Checking for Enrollment Status" \
+	--progresstext "Starting Manual Enrollment" \
 	--height "300" \
 	&
 
-	sleep 10
-	DialogUpdate quit:
+	if [[ "$JamfEnrolled" == "True" ]]; then
+		DialogUpdate "progresstext: Removing Jamf Framework"
+		sleep 3
+		#Detect MDM Profile and wait for it to be removed
+		if /usr/local/bin/jamf removeFramework &> /dev/null; then
+			UpdateScriptLog "JAMF REMOVAL: Jamf Framework Removed"
+			DialogUpdate "progresstext: Jamf Framework Removed"
+			sleep 3
+		else
+			UpdateScriptLog "JAMF REMOVAL: ERROR: Jamf Framework Could Not be Removed"
+			DialogUpdate "progresstext: ERROR: Jamf Framework Could Not be Removed"
+			sleep 3
+		fi
+	fi
+
+	DialogUpdate "progresstext: Opening Enrollment Page"
+	sleep 3
+	open "https://itsemp.jamfcloud.com/enroll"
+	DialogUpdate "progresstext: Please follow the on screen instructions to complete enrollment"
+	sleep 3
+	DialogUpdate "quit:"
 	
 }
+
+function DetectJamfEnrollment() {
+	#Check for Jamf Enrollment
+	if /usr/local/bin/jamf checkJSSConnection &> /dev/null; then
+		UpdateScriptLog "JAMF ENROLLMENT: This Computer is enrolled in Jamf"
+		DialogUpdate "progresstext: This Computer is already enrolled in Jamf"
+		JamfEnrolled="True"
+		sleep 3
+	else
+		UpdateScriptLog "JAMF ENROLLMENT: This Computer is NOT enrolled in Jamf"
+		DialogUpdate "progresstext: This Computer is NOT enrolled in Jamf"
+		JamfEnrolled="False"
+		sleep 3
+	fi
+}
+
 
 ###########################################################################
 #Curl Needed Files
@@ -597,6 +631,7 @@ function ManualEnrollment() {
 	--infotext "$ScriptName Version : $ScriptVersion" \
 	--ontop "true" \
 	--button1text "Enroll" \
+	--button2text "Cancel" \
 	--titlefont "shadow=true, size=40" \
 	--height "800" 
 	
@@ -606,6 +641,11 @@ function ManualEnrollment() {
         # Button 1 processing here
         UpdateScriptLog "CERT INFO BUTTON: $CurrentUser Pressed (Enroll"
 		JamfEnrollmentManual
+		exit 0
+        ;;
+		1)
+        # Button 2 processing here
+        UpdateScriptLog "CERT INFO BUTTON: $CurrentUser Pressed (Cancel)"
 		exit 0
         ;;
         *)
@@ -640,7 +680,8 @@ function AutomatedEnrollment() {
 	--bannerimage "https://github.com/uvaitsei/JamfImages/blob/main/BANNERS/BLUEBACK-820-150.png?raw=true" \
 	--infotext "$ScriptName Version : $ScriptVersion" \
 	--ontop "true" \
-	--button1text "Ok" \
+	--button1text "Enroll" \
+	--button2text "Cancel" \
 	--titlefont "shadow=true, size=40" \
 	--height "500" 
 	
@@ -650,6 +691,11 @@ function AutomatedEnrollment() {
         # Button 1 processing here
         UpdateScriptLog "CERT INFO BUTTON: $CurrentUser Pressed (Enroll)"
 		JamfEnrollmentAutmated
+		exit 0
+        ;;
+		1)
+        # Button 2 processing here
+        UpdateScriptLog "CERT INFO BUTTON: $CurrentUser Pressed (Cancel)"
 		exit 0
         ;;
         *)
@@ -699,10 +745,10 @@ WaitForSetupAssistant
 WaitForFinder
 CurrentLoggedInUser
 SwiftDialogCheck
-JamfEnrollment
 
 ##Script Functions
-
+JamfEnrollment
+DetectJamfEnrollment
 #Curl Needed Files
 CurlNeededFiles
 
@@ -723,6 +769,10 @@ if [[ "$EnrollmentType" == "Automated" ]]; then
 	#Display Computer Information and Prompt for Enrollment
 	DialogUpdate "progresstext: Automated Enrollment Available"
 	sleep 3
+	if [[ "$JamfEnrolled" == "True" ]]; then
+		DialogUpdate "progresstext: This deviice will be re-enrolled in Jamf"
+		sleep 3
+	fi
 	DialogUpdate "quit:"
 	AutomatedEnrollment
 fi
@@ -732,10 +782,16 @@ if [[ "$EnrollmentType" == "Manual" ]]; then
 	#Display Computer Information and Prompt for Web Enrollment
 	DialogUpdate "progresstext: Manual Enrollment Required"
 	sleep 3
+	if [[ "$JamfEnrolled" == "True" ]]; then
+		DialogUpdate "progresstext: This deviice will be re-enrolled in Jamf"
+		sleep 3
+	fi
 	DialogUpdate "quit:"
 	ManualEnrollment
 fi
 
+CleanUp
+exit 0
 
 #Script Finilization
 ############################################################################
