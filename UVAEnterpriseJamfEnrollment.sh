@@ -619,7 +619,7 @@ if [[ "$PlatformName" == "UVA Enterprise Jamf" ]]; then
 else
 	UpdateScriptLog "AUTOMATED DEVICE ENROLLMENT:: This Computer is NOT enrolled UVA Enterprise Jamf Device Services through Apple School Manager"
 	UpdateScriptLog "AUTOMATED DEVICE ENROLLMENT: Must Use Manual Enrollment"
-	EnrollmentType="Automated"
+	EnrollmentType="Manual"
 fi
 
 
