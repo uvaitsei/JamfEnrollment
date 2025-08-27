@@ -143,6 +143,69 @@ function JamfEnrollment() {
 	
 }
 
+
+function JamfEnrollmentAutmated() {
+	
+	UpdateScriptLog "SWIFT DIALOG DISPLAY: Starting"
+
+	#Check Swift Dialog Version
+	DialogVersion=$( /usr/local/bin/dialog --version )
+	UpdateScriptLog "SWIFT DIALOG DISPLAY: Swift Dialog Version: $DialogVersion"
+	
+	DialogBinary="/usr/local/bin/dialog"  
+	
+	$DialogBinary \
+	--title "$Title" \
+	--message "Guided Automated Enrollment" \
+	--messagefont "size=16" \
+	--bannerimage "https://github.com/uvaitsei/JamfImages/blob/main/BANNERS/BLUEBACK-820-150.png?raw=true" \
+	--infotext "$ScriptName Version : $ScriptVersion" \
+	--ontop "true" \
+	--button1disabled "true" \
+	--commandfile "$SwiftCommandFile" \
+	--titlefont "shadow=true, size=40" \
+	--progress "100" \
+	--progresstext "Checking for Enrollment Status" \
+	--height "300" \
+	&
+	
+	sleep 10
+	DialogUpdate quit:
+
+}
+
+
+
+function JamfEnrollmentManual() {
+	
+	UpdateScriptLog "SWIFT DIALOG DISPLAY: Starting"
+
+	#Check Swift Dialog Version
+	DialogVersion=$( /usr/local/bin/dialog --version )
+	UpdateScriptLog "SWIFT DIALOG DISPLAY: Swift Dialog Version: $DialogVersion"
+	
+	DialogBinary="/usr/local/bin/dialog"  
+	
+	$DialogBinary \
+	--title "Guided Maanual Enrollment" \
+	--message "Checking Enrollment Status" \
+	--messagefont "size=16" \
+	--bannerimage "https://github.com/uvaitsei/JamfImages/blob/main/BANNERS/BLUEBACK-820-150.png?raw=true" \
+	--infotext "$ScriptName Version : $ScriptVersion" \
+	--ontop "true" \
+	--button1disabled "true" \
+	--commandfile "$SwiftCommandFile" \
+	--titlefont "shadow=true, size=40" \
+	--progress "100" \
+	--progresstext "Checking for Enrollment Status" \
+	--height "300" \
+	&
+
+	sleep 10
+	DialogUpdate quit:
+	
+}
+
 ###########################################################################
 #Curl Needed Files
 ###########################################################################
@@ -542,7 +605,7 @@ function ManualEnrollment() {
         0)
         # Button 1 processing here
         UpdateScriptLog "CERT INFO BUTTON: $CurrentUser Pressed (Enroll"
-		CleanUp
+		JamfEnrollmentManual
 		exit 0
         ;;
         *)
@@ -586,7 +649,7 @@ function AutomatedEnrollment() {
         0)
         # Button 1 processing here
         UpdateScriptLog "CERT INFO BUTTON: $CurrentUser Pressed (Enroll)"
-		CleanUp
+		JamfEnrollmentAutmated
 		exit 0
         ;;
         *)
