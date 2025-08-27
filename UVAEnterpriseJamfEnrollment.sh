@@ -567,7 +567,9 @@ function AutomatedEnrollment() {
 	DialogVersion=$( /usr/local/bin/dialog --version )
 	UpdateScriptLog "SWIFT DIALOG DISPLAY: Swift Dialog Version: $DialogVersion"
 	
-	EnrollmentInfo="### UVA Enterprise Jamf Automated Enrollment Instructions"
+	EnrollmentInfo="### UVA Enterprise Jamf Automated Enrollment Instructions\
+	/nPlatorm Name: $PlatformName \
+	/nService Name: $serviceName"
 
 	DialogBinary="/usr/local/bin/dialog"  
 
