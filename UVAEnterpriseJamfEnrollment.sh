@@ -807,8 +807,6 @@ if [[ "$EnrollmentType" == "Manual" ]]; then
 	ManualEnrollment
 fi
 
-CleanUp
-exit 0
 
 #Script Finilization
 ############################################################################
@@ -816,3 +814,4 @@ DisableCaffeinate
 UpdateScriptLog "SCRIPT FOOTER: $Title - $ScriptName - Version: $ScriptVersion : End"
 SendTeamsMessage
 CleanUp
+exit 0
