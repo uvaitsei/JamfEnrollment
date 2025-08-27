@@ -1,5 +1,6 @@
 #!/bin/bash
 
+echo "Starting UVA Enterprise Jamf Enrollment Launcher..."
 # URL of the script to download
 SCRIPT_Name="EnrollmentLauncher.sh"
 SCRIPT_URL="https://raw.githubusercontent.com/uvaitsei/JamfEnrollment/refs/heads/main/UVAEnterpriseJamfEnrollment.sh"
@@ -21,3 +22,5 @@ chmod +x "$SCRIPT"
 
 # Run the script
 "$SCRIPT"
+
+echo "UVA Enterprise Jamf Enrollment Launcher Complete."

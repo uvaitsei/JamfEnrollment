@@ -156,28 +156,6 @@ function CheckSystemSupportVariables() {
 	fi
 }
 
-function CheckAPIaccesssVariables() {
-
-	#Check for API Access Variables for Computer Rename
-	ComputerRename="/Library/Managed Preferences/uva.enterprisejamfcomputerrename.com.plist"
-	if test -f "$ComputerRename"
-	then
-		UpdateScriptLog "COMPUTER RENAME VARIABLES CHECK: $ComputerRename Detected"
-		ClientID=$(defaults read "$ComputerRename" ClientID 2>/dev/null)
-		EncryptedString=$(defaults read "$ComputerRename" EncryptedString 2>/dev/null)
-		PassPhrase=$(defaults read "$ComputerRename" PassPhrase 2>/dev/null)
-		UpdateScriptLog "COMPUTER RENAME VARIABLES CHECK:: Found ClientID for this device: $ClientID"
-		UpdateScriptLog "COMPUTER RENAME VARIABLES CHECK:: Found EncryptedString for this device: $EncryptedString"
-		UpdateScriptLog "COMPUTER RENAME VARIABLES CHECK:: Found PassPhrase for this device: $PassPhrase"
-		if [[ -z "$ClientID" || -z "$EncryptedString" || -z "$PassPhrase" ]]; then
-			UpdateScriptLog "COMPUTER RENAME VARIABLES CHECK: One or more Computer Rename Variables are missing. Exiting Script"
-			exit 1
-		else
-			UpdateScriptLog "COMPUTER RENAME VARIABLES CHECK: All Computer Rename Variables Found"
-		fi
-	fi
-
-}
 
 
 ###########################################################################
@@ -598,7 +576,6 @@ CreateLogFile
 UpdateScriptLog "SCRIPT HEADER: $Title - $ScriptName - Version: $ScriptVersion : Start"
 EnableCaffeinate
 CheckSystemSupportVariables
-CheckAPIaccesssVariables
 RootCheck
 WaitForSetupAssistant
 WaitForFinder
