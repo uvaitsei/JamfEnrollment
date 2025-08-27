@@ -10,7 +10,7 @@
 #Email         	:mam5hs@virginia.edu
 #Organization	:UVA-ITS
 #Last Updated	:
-#Version		:1.1
+#Version		:1.2
 
 ###########################################################################
 # Script Change History
@@ -70,7 +70,7 @@ VerboseMode="True"
 ScriptName="UVA Enterprise Jamf - Enrollment"
 Title="UVA Enterprise Jamf - Enrollment"
 Summary="Summary"
-ScriptVersion="1.1"
+ScriptVersion="1.2"
 ScriptLogPath="/var/log/UVA-JAMF/"
 ScriptLogFile="UVA-Jamf-$ScriptName.log"
 ScriptLog="$ScriptLogPath$ScriptLogFile"
@@ -269,7 +269,7 @@ function CurlNeededFiles() {
 		UpdateScriptLog "ASM API CONFIG CHECK: $ASMAPI Detected"
 	else
 		UpdateScriptLog "ASM API CONFIG CHECK: No ASM API Config File Detected Downloading"
-		curl -L -o "/Library/Managed Preferences/uva.asmprod.plist" "https://raw.githubusercontent.com/uvaitsei/EEP-Jamf/main/Production/UVA%20Enterprise%20Jamf%20Enrollment/com.uvaasmprod.plist"
+		curl -L -o "/Library/Managed Preferences/uva.asmprod.plist" "https://raw.githubusercontent.com/uvaitsei/JamfEnrollment/refs/heads/main/uva.asmprod.plist"
 	fi
 	
 	#Check for ASM API Variables
