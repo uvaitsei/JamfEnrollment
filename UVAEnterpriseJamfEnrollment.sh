@@ -10,7 +10,7 @@
 #Email         	:mam5hs@virginia.edu
 #Organization	:UVA-ITS
 #Last Updated	:
-#Version		:1.2
+#Version		:1.3
 
 ###########################################################################
 # Script Change History
@@ -70,7 +70,7 @@ VerboseMode="True"
 ScriptName="UVA Enterprise Jamf - Enrollment"
 Title="UVA Enterprise Jamf - Enrollment"
 Summary="Summary"
-ScriptVersion="1.2"
+ScriptVersion="1.3"
 ScriptLogPath="/var/log/UVA-JAMF/"
 ScriptLogFile="UVA-Jamf-$ScriptName.log"
 ScriptLog="$ScriptLogPath$ScriptLogFile"
@@ -243,6 +243,7 @@ function JamfEnrollmentManual() {
 				UpdateScriptLog "MDM PROFILE: MDM profile could not be removed after 5 minutes."
 				DialogUpdate "progresstext: MDM profile could not be removed after 5 minutes."
 				MDMProfileStatus="NonRemovable"
+				JamfMDMProfileUnremoveable
 			fi
 		fi
 	fi
@@ -256,16 +257,60 @@ function JamfEnrollmentManual() {
 	
 }
 
+function JamfMDMProfileUnremoveable() {
+	
+	UpdateScriptLog "SWIFT DIALOG DISPLAY: Starting"
+
+	#Check Swift Dialog Version
+	DialogVersion=$( /usr/local/bin/dialog --version )
+	UpdateScriptLog "SWIFT DIALOG DISPLAY: Swift Dialog Version: $DialogVersion"
+	
+	EnrollmentInfo="### UVA Enterprise Jamf Non removable MDM Instructions \
+	\n This compuer was previously setup in a prestage where the MDM profile was marked as not removable. "
+
+	DialogBinary="/usr/local/bin/dialog"  
+
+	$DialogBinary \
+	--title "MDM Profile Not Removable" \
+	--message "$EnrollmentInfo" \
+	--messagefont "size=16" \
+	--bannerimage "https://github.com/uvaitsei/JamfImages/blob/main/BANNERS/BLUEBACK-820-150.png?raw=true" \
+	--infotext "$ScriptName Version : $ScriptVersion" \
+	--ontop "true" \
+	--button1text "Continue" \
+	--titlefont "shadow=true, size=40" \
+	--height "800" 
+	
+	#Buttons
+    case $? in
+        0)
+        # Button 1 processing here
+        UpdateScriptLog "NOT REMOVABLE BUTTON: $CurrentUser Pressed (Continue)"
+		JamfEnrollmentManual
+		exit 0
+        ;;
+        *)
+        # No Button processing here
+        UpdateScriptLog "NOT REMOVABLE BUTTON: $CurrentUser Did not press (Cancel) or (Continue)"
+		CleanUp
+		exit 1
+        ;;
+    esac
+	
+	
+}
+
+
 function DetectJamfEnrollment() {
 	#Check for Jamf Enrollment
 	if /usr/local/bin/jamf checkJSSConnection &> /dev/null; then
-		UpdateScriptLog "JAMF ENROLLMENT: This Computer is enrolled in Jamf"
-		DialogUpdate "progresstext: This Computer is already enrolled in Jamf"
+		UpdateScriptLog "JAMF ENROLLMENT: This Computer is enrolled in UVA EnterpriseJamf"
+		DialogUpdate "progresstext: This Computer is already enrolled in UVA Enterprise Jamf"
 		JamfEnrolled="True"
 		sleep 3
 	else
-		UpdateScriptLog "JAMF ENROLLMENT: This Computer is NOT enrolled in Jamf"
-		DialogUpdate "progresstext: This Computer is NOT enrolled in Jamf"
+		UpdateScriptLog "JAMF ENROLLMENT: This Computer is NOT enrolled in UVA Enterprise Jamf"
+		DialogUpdate "progresstext: This Computer is NOT enrolled in UVA Enterprise Jamf"
 		JamfEnrolled="False"
 		sleep 3
 	fi
@@ -673,18 +718,18 @@ function ManualEnrollment() {
     case $? in
         0)
         # Button 1 processing here
-        UpdateScriptLog "CERT INFO BUTTON: $CurrentUser Pressed (Enroll"
+        UpdateScriptLog "MANUAL ENROLL BUTTON: $CurrentUser Pressed (Enroll"
 		JamfEnrollmentManual
 		exit 0
         ;;
 		1)
         # Button 2 processing here
-        UpdateScriptLog "CERT INFO BUTTON: $CurrentUser Pressed (Cancel)"
+        UpdateScriptLog "MANUAL ENROLL BUTTON: $CurrentUser Pressed (Cancel)"
 		exit 0
         ;;
         *)
         # No Button processing here
-        UpdateScriptLog "CERT INFO BUTTON: $CurrentUser Did not press (Cancel) or (Enroll)"
+        UpdateScriptLog "MANUAL ENROLL BUTTON: $CurrentUser Did not press (Cancel) or (Enroll)"
 		CleanUp
 		exit 1
         ;;
@@ -723,18 +768,18 @@ function AutomatedEnrollment() {
     case $? in
         0)
         # Button 1 processing here
-        UpdateScriptLog "CERT INFO BUTTON: $CurrentUser Pressed (Enroll)"
+        UpdateScriptLog "AUTO ENROLL BUTTON: $CurrentUser Pressed (Enroll)"
 		JamfEnrollmentAutmated
 		exit 0
         ;;
 		1)
         # Button 2 processing here
-        UpdateScriptLog "CERT INFO BUTTON: $CurrentUser Pressed (Cancel)"
+        UpdateScriptLog "AUTO ENROLL BUTTON: $CurrentUser Pressed (Cancel)"
 		exit 0
         ;;
         *)
         # No Button processing here
-        UpdateScriptLog "CERT INFO BUTTON: $CurrentUser Did not press (Cancel) or (Enroll)"
+        UpdateScriptLog "AUTO ENROLL BUTTON: $CurrentUser Did not press (Cancel) or (Enroll)"
 		CleanUp
 		exit 1
         ;;
@@ -804,7 +849,7 @@ if [[ "$EnrollmentType" == "Automated" ]]; then
 	DialogUpdate "progresstext: Automated Enrollment Available"
 	sleep 3
 	if [[ "$JamfEnrolled" == "True" ]]; then
-		DialogUpdate "progresstext: This deviice will be re-enrolled in Jamf"
+		DialogUpdate "progresstext: This deviice will be re-enrolled in UVA Enterprise Jamf"
 		sleep 3
 	fi
 	DialogUpdate "quit:"
@@ -817,7 +862,7 @@ if [[ "$EnrollmentType" == "Manual" ]]; then
 	DialogUpdate "progresstext: Manual Enrollment Required"
 	sleep 3
 	if [[ "$JamfEnrolled" == "True" ]]; then
-		DialogUpdate "progresstext: This deviice will be re-enrolled in Jamf"
+		DialogUpdate "progresstext: This deviice will be re-enrolled in UVA Enterprise Jamf"
 		sleep 3
 	fi
 	DialogUpdate "quit:"
