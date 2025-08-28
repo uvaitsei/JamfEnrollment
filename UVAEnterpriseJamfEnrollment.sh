@@ -220,15 +220,30 @@ function JamfEnrollmentManual() {
 	if [[ "$JamfEnrolled" == "True" ]]; then
 		DialogUpdate "progresstext: Removing Jamf Framework"
 		sleep 3
-		#Detect MDM Profile and wait for it to be removed
+		# Remove Jamf Framework
 		if /usr/local/bin/jamf removeFramework &> /dev/null; then
 			UpdateScriptLog "JAMF REMOVAL: Jamf Framework Removed"
 			DialogUpdate "progresstext: Jamf Framework Removed"
 			sleep 3
-		else
-			UpdateScriptLog "JAMF REMOVAL: ERROR: Jamf Framework Could Not be Removed"
-			DialogUpdate "progresstext: ERROR: Jamf Framework Could Not be Removed"
-			sleep 3
+			# Wait up to 5 minutes for MDM profile to be removed
+			MDMProfileStatus="Removed"
+			MDMProfileIdentifier="com.jamfsoftware.management.JSS"
+			ProfileRemoved="False"
+			for ((i=0; i<300; i++)); do
+				if ! /usr/bin/profiles -P | grep -q "$MDMProfileIdentifier"; then
+					ProfileRemoved="True"
+					break
+				fi
+				sleep 1
+			done
+			if [[ "$ProfileRemoved" == "True" ]]; then
+				UpdateScriptLog "MDM PROFILE: MDM profile successfully removed."
+				DialogUpdate "progresstext: MDM profile successfully removed."
+			else
+				UpdateScriptLog "MDM PROFILE: MDM profile could not be removed after 5 minutes."
+				DialogUpdate "progresstext: MDM profile could not be removed after 5 minutes."
+				MDMProfileStatus="NonRemovable"
+			fi
 		fi
 	fi
 
