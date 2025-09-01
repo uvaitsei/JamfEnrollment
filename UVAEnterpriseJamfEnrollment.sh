@@ -176,6 +176,36 @@ function JamfEnrollmentAutmated() {
 			UpdateScriptLog "JAMF REMOVAL: Jamf Framework Removed"
 			DialogUpdate "progresstext: Jamf Framework Removed"
 			sleep 3
+			# Wait up to 5 minutes for MDM profile to be removed
+			MDMProfileIdentifier="com.jamfsoftware.tcc.management"
+			ProfileRemoved="False"
+			for ((i=0; i<300; i++)); do
+				if /usr/bin/profiles -C | grep -q "profileIdentifier: $MDMProfileIdentifier"; then
+					ProfileRemoved="True"
+					break
+				fi
+				UpdateScriptLog "MDM PROFILE: Waiting for up to 5 minutes for MDM Profile to be removed."
+				DialogUpdate "progresstext: Waiting for up to 5 minutes for MDM Profile to be removed."
+				sleep 1
+			done
+
+			DialogUpdate "progresstext: Starting Automated Enrollment"
+			sleep 5
+			profiles renew -type enrollment
+
+			# Wait up to 5 minutes for MDM profile to be installed
+			# The correct identifier for the Jamf MDM profile is usually "com.jamfsoftware.management.mdm"
+			MDMProfileIdentifier="com.jamfsoftware.tcc.management"
+			ProfileInstalled="False"
+			for ((i=0; i<300; i++)); do
+				if /usr/bin/profiles -C | grep -q "profileIdentifier: $MDMProfileIdentifier"; then
+					ProfileInstalled="True"
+					break
+				fi
+				UpdateScriptLog "MDM PROFILE: Waiting for up to 5 minutes for MDM Profile to install."
+				DialogUpdate "progresstext: Waiting for up to 5 minutes for MDM Profile to install."
+				sleep 1
+			done
 		else
 			UpdateScriptLog "JAMF REMOVAL: ERROR: Jamf Framework Could Not be Removed"
 			DialogUpdate "progresstext: ERROR: Jamf Framework Could Not be Removed"
@@ -183,46 +213,22 @@ function JamfEnrollmentAutmated() {
 		fi
 	fi
 
-	# Wait up to 5 minutes for MDM profile to be removed
-	MDMProfileIdentifier="com.jamfsoftware.tcc.management"
-	ProfileRemoved="False"
-	for ((i=0; i<300; i++)); do
-		if /usr/bin/profiles -C | grep -q "profileIdentifier: $MDMProfileIdentifier"; then
-			ProfileRemoved="True"
-			break
-		fi
-		UpdateScriptLog "MDM PROFILE: Waiting for up to 5 minutes for MDM Profile to be removed."
-		DialogUpdate "progresstext: Waiting for up to 5 minutes for MDM Profile to be removed."
-		sleep 1
-	done
-
-	DialogUpdate "progresstext: Starting Automated Enrollment"
-	sleep 5
-	profiles renew -type enrollment
 	
-	# Wait up to 5 minutes for MDM profile to be installed
-	# The correct identifier for the Jamf MDM profile is usually "com.jamfsoftware.management.mdm"
-	MDMProfileIdentifier="com.jamfsoftware.tcc.management"
-	ProfileInstalled="False"
-	for ((i=0; i<300; i++)); do
-		if /usr/bin/profiles -C | grep -q "profileIdentifier: $MDMProfileIdentifier"; then
-			ProfileInstalled="True"
-			break
-		fi
-		UpdateScriptLog "MDM PROFILE: Waiting for up to 5 minutes for MDM Profile to install."
-		DialogUpdate "progresstext: Waiting for up to 5 minutes for MDM Profile to install."
-		sleep 1
-	done
+
+	
+	
+	
 
 	if [[ "$ProfileInstalled" == "True" ]]; then
 		UpdateScriptLog "MDM PROFILE: MDM profile successfully installed."
 		DialogUpdate "progresstext: MDM profile successfully installed."
+		sleep 30
+		DialogUpdate "quit:"
 	else
 		UpdateScriptLog "MDM PROFILE: MDM profile could not be found after 5 minutes."
 		DialogUpdate "progresstext: MDM profile could not be found after 5 minutes."
 		sleep 30
 		DialogUpdate "quit:"
-		exit 1
 	fi
 
 }
@@ -269,6 +275,7 @@ function JamfEnrollmentManual() {
 			for ((i=0; i<300; i++)); do
 				if ! /usr/bin/profiles -C | grep -q "$MDMProfileIdentifier"; then
 					ProfileRemoved="True"
+					UpdateScriptLog "MDM profile successfully removed."
 					break
 				fi
 				sleep 1
