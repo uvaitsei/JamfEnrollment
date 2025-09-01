@@ -322,7 +322,7 @@ function DetectJamfEnrollment() {
 ###########################################################################
 function CheckFilesNeeded() {
 	
-	ASMAPI="/Library/Managed Preferences/uva.asmprod.plist"
+	ASMAPI="/private/var/tmp/UVAASM/uva.asmprod.plist"
 	# Check for the existence of ASM API Config File and delete if it exists
 	# Ensure latest ASM API Config File is present
 	if [ -f "$ASMAPI" ]; then
