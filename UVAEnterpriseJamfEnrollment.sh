@@ -183,10 +183,24 @@ function JamfEnrollmentAutmated() {
 		fi
 	fi
 
+	# Wait up to 5 minutes for MDM profile to be removed
+	MDMProfileStatus="Removed"
+	MDMProfileIdentifier="com.jamfsoftware.tcc.management"
+	ProfileRemoved="False"
+	for ((i=0; i<300; i++)); do
+		if ! /usr/bin/profiles -C | grep -q "$MDMProfileIdentifier"; then
+			ProfileRemoved="True"
+			break
+		fi
+		UpdateScriptLog "MDM PROFILE: Waiting for up to 5 minutes for MDM Profile to be removed."
+		DialogUpdate "progresstext: Waiting for up to 5 minutes for MDM Profile to be removed."
+		sleep 1
+	done
+
 	DialogUpdate "progresstext: Starting Automated Enrollment"
 	profiles renew -type enrollment
 	
-	# Wait up to 5 minutes for MDM profile to be removed
+	# Wait up to 5 minutes for MDM profile to be installed
 	MDMProfileStatus="Removed"
 	MDMProfileIdentifier="com.jamfsoftware.tcc.management"
 	ProfileRemoved="False"
@@ -206,6 +220,8 @@ function JamfEnrollmentAutmated() {
 	else
 		UpdateScriptLog "MDM PROFILE: MDM profile could not be found after 5 minutes."
 		DialogUpdate "progresstext: MDM profile could not be found after 5 minutes."
+		sleep 30
+		DialogUpdate "quit:"
 		exit 1
 	fi
 
