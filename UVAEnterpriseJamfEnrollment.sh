@@ -171,21 +171,24 @@ function JamfEnrollmentAutmated() {
 	if [[ "$JamfEnrolled" == "True" ]]; then
 		DialogUpdate "progresstext: Removing Jamf Framework"
 		sleep 3
-		#Detect MDM Profile and wait for it to be removed
 		if /usr/local/bin/jamf removeFramework &> /dev/null; then
 			UpdateScriptLog "JAMF REMOVAL: Jamf Framework Removed"
 			DialogUpdate "progresstext: Jamf Framework Removed"
 			sleep 3
+
 			# Wait up to 5 minutes for MDM profile to be removed
-			MDMProfileIdentifier="com.jamfsoftware.tcc.management"
+			ProfileIdentifier="com.jamfsoftware.tcc.management"
 			ProfileRemoved="False"
 			for ((i=0; i<300; i++)); do
-				if /usr/bin/profiles -C | grep -q "profileIdentifier: $MDMProfileIdentifier"; then
+				if ! /usr/bin/profiles -P | grep -q "$ProfileIdentifier"; then
 					ProfileRemoved="True"
+					UpdateScriptLog "MDM PROFILE: MDM profile successfully removed."
 					break
 				fi
-				UpdateScriptLog "MDM PROFILE: Waiting for up to 5 minutes for MDM Profile to be removed."
-				DialogUpdate "progresstext: Waiting for up to 5 minutes for MDM Profile to be removed."
+				if (( i % 10 == 0 )); then
+					UpdateScriptLog "MDM PROFILE: Waiting for up to 5 minutes for MDM Profile to be removed."
+					DialogUpdate "progresstext: Waiting for up to 5 minutes for MDM Profile to be removed."
+				fi
 				sleep 1
 			done
 
@@ -194,16 +197,17 @@ function JamfEnrollmentAutmated() {
 			profiles renew -type enrollment
 
 			# Wait up to 5 minutes for MDM profile to be installed
-			# The correct identifier for the Jamf MDM profile is usually "com.jamfsoftware.management.mdm"
-			MDMProfileIdentifier="com.jamfsoftware.tcc.management"
 			ProfileInstalled="False"
 			for ((i=0; i<300; i++)); do
-				if /usr/bin/profiles -C | grep -q "profileIdentifier: $MDMProfileIdentifier"; then
+				if /usr/bin/profiles -P | grep -q "$ProfileIdentifier"; then
 					ProfileInstalled="True"
+					UpdateScriptLog "MDM PROFILE: MDM profile successfully installed."
 					break
 				fi
-				UpdateScriptLog "MDM PROFILE: Waiting for up to 5 minutes for MDM Profile to install."
-				DialogUpdate "progresstext: Waiting for up to 5 minutes for MDM Profile to install."
+				if (( i % 10 == 0 )); then
+					UpdateScriptLog "MDM PROFILE: Waiting for up to 5 minutes for MDM Profile to install."
+					DialogUpdate "progresstext: Waiting for up to 5 minutes for MDM Profile to install."
+				fi
 				sleep 1
 			done
 		else
@@ -214,11 +218,6 @@ function JamfEnrollmentAutmated() {
 	fi
 
 	
-
-	
-	
-	
-
 	if [[ "$ProfileInstalled" == "True" ]]; then
 		UpdateScriptLog "MDM PROFILE: MDM profile successfully installed."
 		DialogUpdate "progresstext: MDM profile successfully installed."
