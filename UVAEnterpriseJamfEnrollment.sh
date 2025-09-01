@@ -329,6 +329,7 @@ function CheckFilesNeeded() {
 		UpdateScriptLog "ASM API CONFIG CHECK: $ASMAPI exists"
 	else
 		UpdateScriptLog "ASM API CONFIG CHECK: $ASMAPI does not exist"
+		exit 1
 	fi
 
 	if test -f "$ASMAPI"
@@ -826,8 +827,8 @@ SwiftDialogCheck
 ##Script Functions
 JamfEnrollment
 DetectJamfEnrollment
-#Curl Needed Files
-CurlNeededFiles
+#Check Needed Files
+CheckFilesNeeded
 
 #Check for Apple School Manager Device Service to determine if Automated Enrollment or Manual Enrollment	
 ASMDeviceServiceLookup
