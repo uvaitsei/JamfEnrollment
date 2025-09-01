@@ -187,7 +187,7 @@ function JamfEnrollmentAutmated() {
 	MDMProfileIdentifier="com.jamfsoftware.tcc.management"
 	ProfileRemoved="False"
 	for ((i=0; i<300; i++)); do
-		if ! /usr/bin/profiles -C | grep -q "$MDMProfileIdentifier"; then
+		if ! /usr/bin/profiles -C | grep "$MDMProfileIdentifier"; then
 			ProfileRemoved="True"
 			break
 		fi
@@ -203,7 +203,7 @@ function JamfEnrollmentAutmated() {
 	MDMProfileIdentifier="com.jamfsoftware.tcc.management"
 	ProfileInstalled="False"
 	for ((i=0; i<300; i++)); do
-		if ! /usr/bin/profiles -C | grep -q "$MDMProfileIdentifier"; then
+		if ! /usr/bin/profiles -C | grep "$MDMProfileIdentifier"; then
 			ProfileInstalled="True"
 			break
 		fi
