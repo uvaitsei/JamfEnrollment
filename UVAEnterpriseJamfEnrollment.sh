@@ -10,7 +10,7 @@
 #Email         	:mam5hs@virginia.edu
 #Organization	:UVA-ITS
 #Last Updated	:
-#Version		:1.4
+#Version		:1.5
 
 ###########################################################################
 # Script Change History
@@ -70,7 +70,7 @@ VerboseMode="True"
 ScriptName="UVA Enterprise Jamf - Enrollment"
 Title="UVA Enterprise Jamf - Enrollment"
 Summary="Summary"
-ScriptVersion="1.4"
+ScriptVersion="1.5"
 ScriptLogPath="/var/log/UVA-JAMF/"
 ScriptLogFile="UVA-Jamf-$ScriptName.log"
 ScriptLog="$ScriptLogPath$ScriptLogFile"
@@ -187,6 +187,24 @@ function JamfEnrollmentAutmated() {
 	DialogUpdate quit:
 	profiles renew -type enrollment
 	
+	#Wait for MDM Profile to exist
+	MDMProfileStatus="NotFound"
+	MDMProfileIdentifier="com.jamfsoftware.management.JSS"
+	for ((i=0; i<300; i++)); do
+		if /usr/bin/profiles -P | grep -q "$MDMProfileIdentifier"; then
+			MDMProfileStatus="Found"
+			break
+		fi
+		sleep 1
+	done
+	if [[ "$MDMProfileStatus" == "Found" ]]; then
+		UpdateScriptLog "MDM PROFILE: MDM profile successfully installed."
+		DialogUpdate "progresstext: MDM profile successfully installed."
+	else
+		UpdateScriptLog "MDM PROFILE: MDM profile could not be found after 5 minutes."
+		DialogUpdate "progresstext: MDM profile could not be found after 5 minutes."
+		exit 1
+	fi
 
 }
 
