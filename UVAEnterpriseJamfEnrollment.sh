@@ -187,7 +187,7 @@ function JamfEnrollmentAutmated() {
 	MDMProfileIdentifier="com.jamfsoftware.tcc.management"
 	ProfileRemoved="False"
 	for ((i=0; i<300; i++)); do
-		if ! /usr/bin/profiles -C | grep "$MDMProfileIdentifier"; then
+		if /usr/bin/profiles -P | grep -q "$MDMProfileIdentifier"; then
 			ProfileRemoved="True"
 			break
 		fi
@@ -197,13 +197,14 @@ function JamfEnrollmentAutmated() {
 	done
 
 	DialogUpdate "progresstext: Starting Automated Enrollment"
+	sleep 5
 	profiles renew -type enrollment
 	
 	# Wait up to 5 minutes for MDM profile to be installed
 	MDMProfileIdentifier="com.jamfsoftware.tcc.management"
 	ProfileInstalled="False"
 	for ((i=0; i<300; i++)); do
-		if /usr/bin/profiles -C | grep -q "$MDMProfileIdentifier"; then
+		if /usr/bin/profiles -P | grep -q "$MDMProfileIdentifier"; then
 			ProfileInstalled="True"
 			break
 		fi
