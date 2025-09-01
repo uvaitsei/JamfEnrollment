@@ -320,18 +320,17 @@ function DetectJamfEnrollment() {
 ###########################################################################
 #Curl Needed Files
 ###########################################################################
-function CurlNeededFiles() {
+function CheckFilesNeeded() {
 	
 	ASMAPI="/Library/Managed Preferences/uva.asmprod.plist"
 	# Check for the existence of ASM API Config File and delete if it exists
 	# Ensure latest ASM API Config File is present
 	if [ -f "$ASMAPI" ]; then
-		UpdateScriptLog "ASM API CONFIG CHECK: $ASMAPI exists, deleting old file."
-		rm -f "$ASMAPI"
+		UpdateScriptLog "ASM API CONFIG CHECK: $ASMAPI exists"
+	else
+		UpdateScriptLog "ASM API CONFIG CHECK: $ASMAPI does not exist"
 	fi
-	UpdateScriptLog "ASM API CONFIG CHECK: Downloading latest ASM API Config File."
-	curl -L -o "$ASMAPI" "https://raw.githubusercontent.com/uvaitsei/JamfEnrollment/refs/heads/main/uva.asmprod.plist"
-	#Check for ASM API Variables
+
 	if test -f "$ASMAPI"
 	then
 		UpdateScriptLog "ASM API VARIABLES CHECK: $ASMAPI Detected"
