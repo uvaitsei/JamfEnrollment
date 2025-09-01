@@ -203,16 +203,16 @@ function JamfEnrollmentAutmated() {
 	MDMProfileIdentifier="com.jamfsoftware.tcc.management"
 	ProfileInstalled="False"
 	for ((i=0; i<300; i++)); do
-		if ! /usr/bin/profiles -C | grep "$MDMProfileIdentifier"; then
+		if /usr/bin/profiles -C | grep -q "$MDMProfileIdentifier"; then
 			ProfileInstalled="True"
 			break
 		fi
-		UpdateScriptLog "MDM PROFILE: Waiting for 5 minutes for MDM Profile to install."
+		UpdateScriptLog "MDM PROFILE: Waiting for up to 5 minutes for MDM Profile to install."
 		DialogUpdate "progresstext: Waiting for up to 5 minutes for MDM Profile to install."
 		sleep 1
 	done
 
-	if [[ "$MDMProfileStatus" == "Found" ]]; then
+	if [[ "$ProfileInstalled" == "True" ]]; then
 		UpdateScriptLog "MDM PROFILE: MDM profile successfully installed."
 		DialogUpdate "progresstext: MDM profile successfully installed."
 	else
