@@ -268,7 +268,8 @@ function JamfEnrollmentManual() {
 	--titlefont "shadow=true, size=20" \
 	--progress "100" \
 	--progresstext "Starting Manual Enrollment" \
-	--height "200" \
+	--height "400" \
+	--width "100" \
 	--position "bottomright" \
 	--activate "true" \
 	&
