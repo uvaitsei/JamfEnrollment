@@ -293,6 +293,10 @@ function JamfEnrollmentManual() {
 		DialogUpdate "progresstext: MDM profile successfully removed."
 		sleep 3
 		DialogUpdate "progresstext: Downloading MDM Profile"
+		#close any open browsers
+		KillProcess "Safari"
+		KillProcess "Google Chrome"
+		KillProcess "Firefox"
 		#open invitation link
 		open "https://itsemp.jamfcloud.com/enroll?invitation=68047365094878774605466781691869379248"
 		sleep 3
