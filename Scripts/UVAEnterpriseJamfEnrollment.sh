@@ -291,68 +291,73 @@ function JamfEnrollmentManual() {
 			UpdateScriptLog "MDM PROFILE: MDM profile successfully removed."
 			DialogUpdate "progresstext: MDM profile successfully removed."
 			sleep 3
-		DialogUpdate "progresstext: Downloading MDM Profile"
-		#open invitation link
-		open "https://itsemp.jamfcloud.com/enroll?invitation=68047365094878774605466781691869379248"
-		sleep 3
-		#Open system settings to device management
-		DialogUpdate "progresstext: Please open System Settings to complete enrollment"
-		/usr/bin/profiles show -all | grep "name: CA Certificate"
-		DialogUpdate "progresstext: Installing CA Certificate"
-		#Wait for CACertificate to be installed
-		sleep 3
-		#Open system settings to device management
-		DialogUpdate "progresstext: Please open System Settings to complete enrollment"
-		sudo /usr/bin/profiles show -all | grep "name: CA Certificate"
-		DialogUpdate "progresstext: Installing CA Certificate"
-		#Wait for CACertificate to be installed
+			DialogUpdate "progresstext: Downloading MDM Profile"
+			#open invitation link
+			open "https://itsemp.jamfcloud.com/enroll?invitation=68047365094878774605466781691869379248"
+			sleep 3
+			#Open system settings to device management
+			DialogUpdate "progresstext: Please open System Settings to complete enrollment"
+			/usr/bin/profiles show -all | grep "name: CA Certificate"
+			DialogUpdate "progresstext: Installing CA Certificate"
+			#Wait for CACertificate to be installed
+			sleep 3
+			#Open system settings to device management
+			DialogUpdate "progresstext: Please open System Settings to complete enrollment"
+			sudo /usr/bin/profiles show -all | grep "name: CA Certificate"
+			DialogUpdate "progresstext: Installing CA Certificate"
+			#Wait for CACertificate to be installed
 	
-		CAACertificate="False"
-		for ((i=0; i<40; i++)); do
-			if /usr/bin/profiles show -all | grep "name: CA Certificate"; then
-				CAACertificate="True"
+			CAACertificate="False"
+			for ((i=0; i<40; i++)); do
+				if /usr/bin/profiles show -all | grep "name: CA Certificate"; then
+					CAACertificate="True"
+					UpdateScriptLog "CA Certificate: successfully installed."
+					break
+				fi
+
+				if (( i % 4 == 0 )); then
+					UpdateScriptLog "CA Certificate: Waiting for up to 10 minutes for CA Certificate to install."
+					DialogUpdate "progresstext: Waiting for up to 10 minutes for CA Certificate to install."
+				fi
+				sleep 15
+			done
+
+			if [[ "$CAACertificate" == "True" ]]; then
 				UpdateScriptLog "CA Certificate: successfully installed."
-				break
+				DialogUpdate "progresstext: CA Certificate successfully installed."
+				sleep 3
+			else
+				UpdateScriptLog "CA Certificate: could not be found after 5 minutes."
+				DialogUpdate "progresstext: CA Certificate could not be found after 5 minutes."
+				sleep 3
 			fi
-			if (( i % 4 == 0 )); then
-				UpdateScriptLog "CA Certificate: Waiting for up to 10 minutes for CA Certificate to install."
-				DialogUpdate "progresstext: Waiting for up to 10 minutes for CA Certificate to install."
-			fi
-			sleep 15
-		done
-
-		if [[ "$CAACertificate" == "True" ]]; then
-			UpdateScriptLog "CA Certificate: successfully installed."
-			DialogUpdate "progresstext: CA Certificate successfully installed."
-			sleep 3
-		else
-			UpdateScriptLog "CA Certificate: could not be found after 5 minutes."
-			DialogUpdate "progresstext: CA Certificate could not be found after 5 minutes."
-			sleep 3
-		fi
 	
-		MDMProfile="False"
-		for ((i=0; i<40; i++)); do
-			if /usr/bin/profiles show -all | grep "name: MDM Profile"; then
-				MDMProfile="True"
-				UpdateScriptLog "MDM profile successfully installed."
-				break
-			fi
-			if (( i % 4 == 0 )); then
-				UpdateScriptLog "MDM PROFILE: Waiting for up to 10 minutes for MDM Profile to install."
-				DialogUpdate "progresstext: Waiting for up to 10 minutes for MDM Profile to install."
-			fi
-			sleep 15
-		done
+			MDMProfile="False"
+			for ((i=0; i<40; i++)); do
+				if /usr/bin/profiles show -all | grep "name: MDM Profile"; then
+					MDMProfile="True"
+					UpdateScriptLog "MDM profile successfully installed."
+					break
+				fi
 
-		if [[ "$MDMProfile" == "True" ]]; then
-			UpdateScriptLog "MDM PROFILE: MDM profile successfully installed."
-			DialogUpdate "progresstext: MDM profile successfully installed."
-			sleep 3
-		else
-			UpdateScriptLog "MDM PROFILE: MDM profile could not be found after 5 minutes."
-			DialogUpdate "progresstext: MDM profile could not be found after 5 minutes."
-			sleep 3
+				if (( i % 4 == 0 )); then
+					UpdateScriptLog "MDM PROFILE: Waiting for up to 10 minutes for MDM Profile to install."
+					DialogUpdate "progresstext: Waiting for up to 10 minutes for MDM Profile to install."
+				fi
+				sleep 15
+			done
+
+			if [[ "$MDMProfile" == "True" ]]; then
+				UpdateScriptLog "MDM PROFILE: MDM profile successfully installed."
+				DialogUpdate "progresstext: MDM profile successfully installed."
+				sleep 20
+				CleanUp
+			else
+				UpdateScriptLog "MDM PROFILE: MDM profile could not be found after 10 minutes."
+				DialogUpdate "progresstext: MDM profile could not be found after 10 minutes."
+				sleep 20
+				CleanUp
+			fi
 		fi
 	fi
 }
