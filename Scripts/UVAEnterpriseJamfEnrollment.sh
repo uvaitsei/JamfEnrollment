@@ -116,7 +116,7 @@ function CreateSwiftDialogCommandFile() {
 }
 
 
-function JamfEnrollment() {
+function JamfEnrollmenStatus() {
 	
 	UpdateScriptLog "SWIFT DIALOG DISPLAY: Starting"
 
@@ -128,7 +128,7 @@ function JamfEnrollment() {
 	
 	$DialogBinary \
 	--title "$Title" \
-	--message "Checking Enrollment Status" \
+	--message "Checking UVA Enterprise Jamf Enrollment" \
 	--messagefont "size=16" \
 	--bannerimage "https://github.com/uvaitsei/JamfImages/blob/main/BANNERS/BLUEBACK-820-150.png?raw=true" \
 	--infotext "$ScriptName Version : $ScriptVersion" \
@@ -141,6 +141,20 @@ function JamfEnrollment() {
 	--height "300" \
 	&
 	
+	#Check for Jamf Enrollment
+	if /usr/local/bin/jamf checkJSSConnection &> /dev/null; then
+		UpdateScriptLog "JAMF ENROLLMENT: This Computer is enrolled in UVA EnterpriseJamf"
+		DialogUpdate "progresstext: This Computer is already enrolled in UVA Enterprise Jamf"
+		JamfEnrolled="True"
+		sleep 5
+	else
+		UpdateScriptLog "JAMF ENROLLMENT: This Computer is NOT enrolled in UVA Enterprise Jamf"
+		DialogUpdate "progresstext: This Computer is NOT enrolled in UVA Enterprise Jamf"
+		JamfEnrolled="False"
+		MDMProfile="False"
+		sleep 5
+	fi
+
 }
 
 function JamfEnrollmentAutmated() {
@@ -476,20 +490,7 @@ function JamfMDMProfileUnremoveable() {
 }
 
 
-function DetectJamfEnrollment() {
-	#Check for Jamf Enrollment
-	if /usr/local/bin/jamf checkJSSConnection &> /dev/null; then
-		UpdateScriptLog "JAMF ENROLLMENT: This Computer is enrolled in UVA EnterpriseJamf"
-		DialogUpdate "progresstext: This Computer is already enrolled in UVA Enterprise Jamf"
-		JamfEnrolled="True"
-		sleep 3
-	else
-		UpdateScriptLog "JAMF ENROLLMENT: This Computer is NOT enrolled in UVA Enterprise Jamf"
-		DialogUpdate "progresstext: This Computer is NOT enrolled in UVA Enterprise Jamf"
-		JamfEnrolled="False"
-		MDMProfile="False"
-		sleep 3
-	fi
+function JamfEnrollment D() {
 }
 
 
@@ -1017,7 +1018,7 @@ CurrentLoggedInUser
 SwiftDialogCheck
 
 ##Script Functions
-JamfEnrollmentDisplay
+JamfEnrollmenStatus
 DetectJamfEnrollment
 #Check Needed Files
 CheckFilesNeeded
