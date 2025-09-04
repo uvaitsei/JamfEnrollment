@@ -287,7 +287,8 @@ function JamfEnrollmentManual() {
 			if /usr/bin/profiles show -all | grep "name: CA Certificate"; then
 				DialogUpdate "progresstext: Removing CA Certificate"
 				# Find the UUID for the CA Certificate profile
-				CACertUUID=$(/usr/bin/profiles show -all | awk '/attribute: name: CA Certificate/{found=1} found && /attribute: profileUUID:/ {print $NF; found=0}' | head -1)
+				CACertUUID=$(profiles show -all | awk '/attribute: name: CA Certificate/{found=1} found && /attribute: profileUUID:/ {print $NF; found=0}' | head -1)
+				#remove Profile using CACertUUID
 				UpdateScriptLog "CA Certificate: Found profile with UUID $CACertUUID"
 				if [[ -n "$CACertUUID" ]]; then
 					/usr/bin/profiles remove -uuid "$CACertUUID"
