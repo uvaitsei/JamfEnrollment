@@ -233,7 +233,7 @@ function JamfEnrollmentAutmated() {
 
 
 
-function JamfEnrollmentManual() {
+function JamfEnrollmentManualDisplay() {
 	
 	UpdateScriptLog "SWIFT DIALOG DISPLAY: Starting"
 
@@ -257,35 +257,46 @@ function JamfEnrollmentManual() {
 	--position "bottomright" \
 	--activate "true" \
 	&
-
 	if [[ "$JamfEnrolled" == "True" ]]; then
 		DialogUpdate "progresstext: Removing Jamf Framework"
-		sleep 3
-		# Remove Jamf Framework
-		if /usr/local/bin/jamf removeFramework &> /dev/null; then
-			UpdateScriptLog "JAMF REMOVAL: Jamf Framework Removed"
-			DialogUpdate "progresstext: Jamf Framework Removed"
-			sleep 3
-			# Wait up to 5 minutes for MDM profile to be removed
-			MDMProfileStatus="Removed"
-			MDMProfile="True"
-			for ((i=0; i<40; i++)); do
-
-				if [[ -z $(/usr/bin/profiles show -all | grep "name: MDM Profile") ]]; then
-					MDMProfile="False"
-					UpdateScriptLog "MDM profile successfully removed."
-					break
-				fi
-
-				if (( i % 4 == 0 )); then
-					UpdateScriptLog "MDM PROFILE: Waiting for up to 10 minutes for MDM Profile to be removed."
-					DialogUpdate "progresstext: Waiting for up to 10 minutes for MDM Profile to be removed."
-				fi
-				sleep 15
-			done
-		fi
+		RemoveJamfFramework
+		RemoveCACertificate
+	else
+		DialogUpdate "progresstext: Starting Manual Enrollment"
+		installCACertandMDMProfile
 	fi
 	
+}
+
+function RemoveJamfFramework {
+	DialogUpdate "progresstext: Removing Jamf Framework"
+	sleep 3
+	# Remove Jamf Framework
+	if /usr/local/bin/jamf removeFramework &> /dev/null; then
+		UpdateScriptLog "JAMF REMOVAL: Jamf Framework Removed"
+		DialogUpdate "progresstext: Jamf Framework Removed"
+		sleep 3
+		# Wait up to 5 minutes for MDM profile to be removed
+		MDMProfileStatus="Removed"
+		MDMProfile="True"
+		for ((i=0; i<40; i++)); do
+
+			if [[ -z $(/usr/bin/profiles show -all | grep "name: MDM Profile") ]]; then
+				MDMProfile="False"
+				UpdateScriptLog "MDM profile successfully removed."
+				break
+			fi
+
+			if (( i % 4 == 0 )); then
+				UpdateScriptLog "MDM PROFILE: Waiting for up to 10 minutes for MDM Profile to be removed."
+				DialogUpdate "progresstext: Waiting for up to 10 minutes for MDM Profile to be removed."
+			fi
+			sleep 15
+		done
+	fi
+}
+
+function RemoveCACertificate {
 	# Detect if CA Certificate exists by name
 	if /usr/bin/profiles show -all | grep "name: CA Certificate" &> /dev/null; then
 		UpdateScriptLog "CA Certificate: Detected existing CA Certificate profile."
@@ -310,8 +321,9 @@ function JamfEnrollmentManual() {
 		DialogUpdate "progresstext: No CA Certificate profile found to remove."
 		sleep 3
 	fi
+}
 
-	
+function InstallCACertandMDMProfile {
 	# If MDM profile is removed then start manual enrollment
 	if [[ "$MDMProfile" == "False" ]]; then
 		UpdateScriptLog "MDM PROFILE: MDM profile successfully removed."
