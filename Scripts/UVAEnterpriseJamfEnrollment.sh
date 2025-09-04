@@ -286,7 +286,7 @@ function JamfEnrollmentManual() {
 			#Remove CA Certificate if it exists
 			if /usr/bin/profiles show -all | grep "name: CA Certificate"; then
 				DialogUpdate "progresstext: Removing CA Certificate"
-				/usr/bin/profiles remove -name "CA Certificate"
+				/usr/bin/profiles remove -name "CA Certificate" <<< "y"
 				sleep 3
 				# Wait up to 5 minutes for CA Certificate to be removed
 				CACertStatus="Removed"
@@ -969,7 +969,11 @@ function AutomatedEnrollment() {
 
 function CleanUp() {
 
-	#Add Any Cleanup Items Here. 
+	#Add Any Cleanup Items Here.
+	#Close Safari if it is open
+	osascript -e 'quit app "Safari"'
+	#Close System Settings if it is open
+	osascript -e 'quit app "System Settings"'
 	UpdateScriptLog "CLEANUP: Removing Temporary Files"
 	#Delete MDMProfileMobileConfig
 	if [[ -f "$MDMProfileMobileConfig" ]]; then
@@ -981,6 +985,7 @@ function CleanUp() {
 		/bin/rm -f "$CACertMobileConfig"
 		UpdateScriptLog "CLEANUP: Deleted $CACertMobileConfig"
 	fi
+	#Close Swift Dialog
 	DialogUpdate "quit:"
 
 }
