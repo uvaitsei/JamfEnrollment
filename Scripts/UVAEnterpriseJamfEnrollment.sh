@@ -286,52 +286,28 @@ function JamfEnrollmentManual() {
 		fi
 	fi
 	
-	#Remove CA Certificate if it exists
-	if /usr/bin/profiles show -all | grep "name: CA Certificate"; then
-		DialogUpdate "progresstext: Removing CA Certificate"
-		# Find the UUID for the CA Certificate profile
-		CACertUUID=$(profiles show -all | awk '/attribute: name: CA Certificate/{found=1} found && /attribute: profileUUID:/ {print $NF; found=0}' | head -1)
-		#remove Profile using CACertUUID
-		UpdateScriptLog "CA Certificate: Found profile with UUID $CACertUUID"
-		if [[ -n "$CACertUUID" ]]; then
-			open "x-apple.systempreferences:com.apple.Profiles-Settings.extension"
-			DialogUpdate "progresstext: Clikck the minus button to remove the CA Certificate"
-			UpdateScriptLog "CA Certificate: Removed manually by user"
-		else
-			UpdateScriptLog "CA Certificate: UUID not found, could not remove profile."
-		fi
+	# Detect if CA Certificate exists by name
+	if /usr/bin/profiles show -all | grep "name: CA Certificate" &> /dev/null; then
+		UpdateScriptLog "CA Certificate: Detected existing CA Certificate profile."
+		DialogUpdate "progresstext: Please remove the CA Certificate profile."
+		open "x-apple.systempreferences:com.apple.Profiles-Settings.extension"
 		sleep 3
 		# Wait up to 5 minutes for CA Certificate to be removed
-		CACertStatus="Removed"
-		CACertificate="True"	
-		for ((i=0; i<40; i++)); do
-
+		for ((i=0; i<100; i++)); do
 			if [[ -z $(/usr/bin/profiles show -all | grep "name: CA Certificate") ]]; then
-				CACertificate="False"
-				UpdateScriptLog "CA Certificate successfully removed."
+				UpdateScriptLog "CA Certificate: Profile successfully removed."
+				DialogUpdate "progresstext: CA Certificate profile successfully removed."
 				break
 			fi
-
-			if (( i % 4 == 0 )); then
-				UpdateScriptLog "CA Certificate: Waiting for up to 10 minutes for CA Certificate to be removed."
-				DialogUpdate "progresstext: Waiting for up to 10 minutes for CA Certificate to be removed."
+			if (( i % 10 == 0 )); then
+				UpdateScriptLog "CA Certificate: Waiting for user to remove CA Certificate profile."
+				DialogUpdate "progresstext: Waiting for CA Certificate profile to be removed..."
 			fi
 			sleep 3
 		done
-		
-		if [[ "$CACertificate" == "False" ]]; then
-			UpdateScriptLog "CA Certificate: successfully removed."
-			DialogUpdate "progresstext: CA Certificate successfully removed."
-			sleep 3
-		else
-			UpdateScriptLog "CA Certificate: could not be found after 10 minutes."
-			DialogUpdate "progresstext: CA Certificate could not be found after 10 minutes."
-			sleep 3
-		fi
-		
 	else
-		UpdateScriptLog "CA Certificate: No CA Certificate Found to Remove"
-		DialogUpdate "progresstext: No CA Certificate Found to Remove"
+		UpdateScriptLog "CA Certificate: No CA Certificate profile found to remove."
+		DialogUpdate "progresstext: No CA Certificate profile found to remove."
 		sleep 3
 	fi
 
