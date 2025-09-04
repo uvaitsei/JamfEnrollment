@@ -286,11 +286,11 @@ function JamfEnrollmentManual() {
 			#Remove CA Certificate if it exists
 			if /usr/bin/profiles show -all | grep "name: CA Certificate"; then
 				DialogUpdate "progresstext: Removing CA Certificate"
-				/usr/bin/profiles -R -p com.jamfsoftware.encrypted-profile-service-scep2
+				/usr/bin/profiles remove -name "CA Certificate"
 				sleep 3
 				# Wait up to 5 minutes for CA Certificate to be removed
 				CACertStatus="Removed"
-				CACertificate="True"
+				CACertificate="True"	
 				for ((i=0; i<40; i++)); do
 
 					if [[ -z $(/usr/bin/profiles show -all | grep "name: CA Certificate") ]]; then
@@ -303,7 +303,7 @@ function JamfEnrollmentManual() {
 						UpdateScriptLog "CA Certificate: Waiting for up to 10 minutes for CA Certificate to be removed."
 						DialogUpdate "progresstext: Waiting for up to 10 minutes for CA Certificate to be removed."
 					fi
-					sleep 15
+					sleep 3
 				done
 				if [[ "$CACertificate" == "False" ]]; then
 					UpdateScriptLog "CA Certificate: successfully removed."
@@ -330,9 +330,9 @@ function JamfEnrollmentManual() {
 		sleep 3
 		DialogUpdate "progresstext: Downloading MDM Profile"
 		#close any open browsers
-		KillProcess "Safari"
-		KillProcess "Google Chrome"
-		KillProcess "Firefox"
+		osascript -e 'quit app "Safari"'
+		osascript -e 'quit app "Google Chrome"'
+		osascript -e 'quit app "Firefox"'
 		#open invitation link
 		open "https://itsemp.jamfcloud.com/enroll?invitation=68047365094878774605466781691869379248"
 		sleep 3
