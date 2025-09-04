@@ -247,7 +247,6 @@ function JamfEnrollmentManual() {
 	--title "Guided Manual Enrollment" \
 	--message "Please follow the guided instructions" \
 	--messagefont "size=12" \
-	--bannerimage "https://github.com/uvaitsei/JamfImages/blob/main/BANNERS/BLUEBACK-820-150.png?raw=true" \
 	--infotext "$ScriptName Version : $ScriptVersion" \
 	--ontop "true" \
 	--button1disabled "true" \
