@@ -82,6 +82,12 @@ function CreateLogFile() {
         touch "$ScriptLog"
 		
     fi
+		fi
+	else
+		UpdateScriptLog "JAMF ENROLLMENT: This Computer is NOT enrolled in UVA Enterprise Jamf"
+		DialogUpdate "progresstext: This Computer is NOT enrolled in UVA Enterprise Jamf"
+		sleep 3
+	fi
 }
 
 function UpdateScriptLog() {
@@ -258,6 +264,8 @@ function JamfEnrollmentManual() {
 	--height "300" \
 	&
 
+	JamfEnrolled="True" # Assume it is True
+
 	if [[ "$JamfEnrolled" == "True" ]]; then
 		DialogUpdate "progresstext: Removing Jamf Framework"
 		sleep 3
@@ -289,16 +297,15 @@ function JamfEnrollmentManual() {
 			UpdateScriptLog "MDM PROFILE: MDM profile successfully removed."
 			DialogUpdate "progresstext: MDM profile successfully removed."
 			sleep 3
-		else
-			UpdateScriptLog "MDM PROFILE: MDM profile could not be removed after 10 minutes."
-			DialogUpdate "progresstext: MDM profile could not be removed after 10 minutes."
-			sleep 3
-		fi
-
 		DialogUpdate "progresstext: Downloading MDM Profile"
-		#open inivation link
-		#open
+		#open invitation link
 		open "https://itsemp.jamfcloud.com/enroll?invitation=68047365094878774605466781691869379248"
+		sleep 3
+		#Open system settings to device management
+		DialogUpdate "progresstext: Please open System Settings to complete enrollment"
+		/usr/bin/profiles show -all | grep "name: CA Certificate"
+		DialogUpdate "progresstext: Installing CA Certificate"
+		#Wait for CACertificate to be installed
 		sleep 3
 		#Open system settings to device management
 		DialogUpdate "progresstext: Please open System Settings to complete enrollment"
