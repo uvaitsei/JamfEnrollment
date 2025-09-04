@@ -291,8 +291,9 @@ function JamfEnrollmentManual() {
 				#remove Profile using CACertUUID
 				UpdateScriptLog "CA Certificate: Found profile with UUID $CACertUUID"
 				if [[ -n "$CACertUUID" ]]; then
-					/usr/bin/profiles remove -uuid "$CACertUUID"
-					UpdateScriptLog "CA Certificate: Removed profile with UUID $CACertUUID"
+					open "x-apple.systempreferences:com.apple.Profiles-Settings.extension"
+					DialogUpdate "progresstext: Clikck the minus button to remove the CA Certificate"
+					UpdateScriptLog "CA Certificate: Removed manually by user"
 				else
 					UpdateScriptLog "CA Certificate: UUID not found, could not remove profile."
 				fi
