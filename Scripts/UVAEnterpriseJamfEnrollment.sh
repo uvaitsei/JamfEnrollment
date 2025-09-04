@@ -244,7 +244,7 @@ function JamfEnrollmentManual() {
 	DialogBinary="/usr/local/bin/dialog"  
 	
 	$DialogBinary \
-	--title "Guided Manual Enrollment" \
+	--title "UVA Jamf Manual Enrollment" \
 	--message "Please follow the guided instructions" \
 	--messagefont "size=12" \
 	--infotext "$ScriptName Version : $ScriptVersion" \
@@ -350,7 +350,7 @@ function JamfEnrollmentManual() {
 				UpdateScriptLog "CA Certificate: Waiting for CA Certificate.mobileconfig to be Downloaded."
 				DialogUpdate "progresstext: Waiting for CA Certificate download..."
 			fi
-			sleep 15
+			sleep 3
 		done
 
 		#Open system settings to device management
@@ -365,10 +365,10 @@ function JamfEnrollmentManual() {
 			fi
 
 			if (( i % 4 == 0 )); then
-				UpdateScriptLog "CA Certificate: Please install the CA Certificate."
-				DialogUpdate "progresstext: Waiting for up to 10 minutes for CA Certificate to install."
+				UpdateScriptLog "CA Certificate: Waiting for up to 10 minutes for CA Certificate to install."
+				DialogUpdate "progresstext: Please install the CA Certificate in the Device Management Window."
 			fi
-			sleep 15
+			sleep 3
 		done
 
 		if [[ "$CAACertificate" == "True" ]]; then
@@ -381,6 +381,8 @@ function JamfEnrollmentManual() {
 			sleep 3
 		fi
 
+		#Make safari the front most app
+		osascript -e 'tell application "Safari" to activate'
 		#Wait for MDMProfile to be installed
 		MDMProfileMobileConfig="/Users/$CurrentUser/Downloads/enrollmentProfile.mobileconfig"
 		# Wait for enrollmentProfile.mobileconfig to exist in Downloads
@@ -394,7 +396,7 @@ function JamfEnrollmentManual() {
 				UpdateScriptLog "MDM Profile: Waiting for enrollmentProfile.mobileconfig to be Downloaded."
 				DialogUpdate "progresstext: Waiting for MDM Profile download..."
 			fi
-			sleep 15
+			sleep 3
 		done
 
 		#Open system settings to device management
@@ -410,7 +412,7 @@ function JamfEnrollmentManual() {
 
 			if (( i % 4 == 0 )); then
 				UpdateScriptLog "MDM PROFILE: Waiting for up to 10 minutes for MDM Profile to install."
-				DialogUpdate "progresstext: Waiting for up to 10 minutes for MDM Profile to install."
+				DialogUpdate "progresstext: Please install the MDM Profile in the Device Management Window."
 			fi
 			sleep 15
 		done
