@@ -860,7 +860,7 @@ function SendTeamsMessage() {
 # Manual Enrollment Swift Dialog Display
 ############################################################################
 
-function ManualEnrollment() {
+function JamfManualEnrollmentDisplay() {
 	
 	UpdateScriptLog "SWIFT DIALOG DISPLAY: Starting"
 
@@ -1017,7 +1017,7 @@ CurrentLoggedInUser
 SwiftDialogCheck
 
 ##Script Functions
-JamfEnrollment
+JamfEnrollmentDisplay
 DetectJamfEnrollment
 #Check Needed Files
 CheckFilesNeeded
