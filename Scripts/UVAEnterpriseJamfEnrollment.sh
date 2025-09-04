@@ -302,7 +302,7 @@ function JamfEnrollmentManual() {
 	#Wait for CACertificate to be installed
 	CAACertificate="False"
 	for ((i=0; i<300; i++)); do
-		if /usr/bin/profiles show -all | grep -A 10 "attribute: CA Certificate"; then
+		if /usr/bin/profiles show -all | grep "attribute: CA Certificate"; then
 			CAACertificate="True"
 			UpdateScriptLog "CA Certificate: successfully installed."
 			break
@@ -324,7 +324,7 @@ function JamfEnrollmentManual() {
 	fi
 	MDMProfile="False"
 	for ((i=0; i<300; i++)); do
-		if /usr/bin/profiles show -all | grep -A 10 "attribute: MDM Profile"; then
+		if /usr/bin/profiles show -all | grep "attribute: MDM Profile"; then
 			MDMProfile="True"
 			UpdateScriptLog "MDM profile successfully installed."
 			break
