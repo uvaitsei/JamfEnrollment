@@ -286,6 +286,7 @@ function JamfEnrollmentManual() {
 		fi
 	fi
 	
+	MDMProfile="False"
 	# If MDM profile is removed then start manual enrollment
 	if [[ "$MDMProfile" == "False" ]]; then
 		UpdateScriptLog "MDM PROFILE: MDM profile successfully removed."
