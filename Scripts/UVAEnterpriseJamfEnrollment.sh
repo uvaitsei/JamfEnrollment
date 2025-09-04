@@ -295,6 +295,8 @@ function JamfEnrollmentManual() {
 		#open invitation link
 		open "https://itsemp.jamfcloud.com/enroll?invitation=68047365094878774605466781691869379248"
 		sleep 3
+		DialogUpdate "posiotion: right"
+		DialogUpdate "actvate: "
 		#Open system settings to device management
 		DialogUpdate "progresstext: Please open System Settings to complete enrollment"
 		DialogUpdate "progresstext: Installing CA Certificate"
