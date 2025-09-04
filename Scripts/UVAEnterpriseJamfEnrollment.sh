@@ -10,7 +10,7 @@
 #Email         	:mam5hs@virginia.edu
 #Organization	:UVA-ITS
 #Last Updated	:
-#Version		:1.7
+#Version		:1.8
 
 ###########################################################################
 # Script Change History
@@ -70,7 +70,7 @@ VerboseMode="True"
 ScriptName="UVA Enterprise Jamf - Enrollment"
 Title="UVA Enterprise Jamf - Enrollment"
 Summary="Summary"
-ScriptVersion="1.7"
+ScriptVersion="1.8"
 ScriptLogPath="/var/log/UVA-JAMF/"
 ScriptLogFile="UVA-Jamf-$ScriptName.log"
 ScriptLog="$ScriptLogPath$ScriptLogFile"
