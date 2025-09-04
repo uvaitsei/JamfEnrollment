@@ -293,7 +293,7 @@ function JamfEnrollmentManual() {
 	DialogUpdate "progresstext: Downloading MDM Profile"
 	#open inivation link
 	#open
-	open "https://itsemp.jamfcloud.com:8443/enroll?invitation=68047365094878774605466781691869379248"
+	open "https://itsemp.jamfcloud.com/enroll?invitation=68047365094878774605466781691869379248"
 	sleep 3
 	DialogUpdate "progresstext: Installing MDM Profile"
 
