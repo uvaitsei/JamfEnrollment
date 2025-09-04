@@ -271,6 +271,7 @@ function JamfEnrollmentManual() {
 	--position "bottomright" \
 	--activate "true" \
 	&
+
 	if [[ "$JamfEnrolled" == "True" ]]; then
 		DialogUpdate "progresstext: Removing Jamf Framework"
 		RemoveJamfFramework
@@ -282,6 +283,7 @@ function JamfEnrollmentManual() {
 		DialogUpdate "progresstext: Installing CA Certificate and MDM Profile"
 		InstallCACertandMDMProfile
 	fi
+
 }
 
 function RemoveJamfFramework() {
@@ -293,7 +295,6 @@ function RemoveJamfFramework() {
 		DialogUpdate "progresstext: Jamf Framework Removed"
 		sleep 3
 		# Wait up to 5 minutes for MDM profile to be removed
-		MDMProfileStatus="Removed"
 		MDMProfile="True"
 		for ((i=0; i<40; i++)); do
 
