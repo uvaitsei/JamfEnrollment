@@ -255,7 +255,9 @@ function JamfEnrollmentManual() {
 	--titlefont "shadow=true, size=40" \
 	--progress "100" \
 	--progresstext "Starting Manual Enrollment" \
-	--height "300" \
+	--height "200" \
+	--position "right" \
+	--activate "true" \
 	&
 
 	if [[ "$JamfEnrolled" == "True" ]]; then
@@ -296,10 +298,9 @@ function JamfEnrollmentManual() {
 		#open invitation link
 		open "https://itsemp.jamfcloud.com/enroll?invitation=68047365094878774605466781691869379248"
 		sleep 3
-		DialogUpdate "posiotion: right"
-		DialogUpdate "actvate: "
 		#Open system settings to device management
 		DialogUpdate "progresstext: Please open System Settings to complete enrollment"
+		open "x-apple.systempreferences:com.apple.Profiles-Settings.extension"
 		DialogUpdate "progresstext: Installing CA Certificate"
 		#Wait for CACertificate to be installed
 	
