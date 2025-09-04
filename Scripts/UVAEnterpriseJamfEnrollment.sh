@@ -268,26 +268,28 @@ function JamfEnrollmentManual() {
 			sleep 3
 			# Wait up to 5 minutes for MDM profile to be removed
 			MDMProfileStatus="Removed"
-			MDMProfileIdentifier="com.jamfsoftware.tcc.management"
-			ProfileRemoved="False"
-			for ((i=0; i<300; i++)); do
-				if ! /usr/bin/profiles -C | grep -q "$MDMProfileIdentifier"; then
-					ProfileRemoved="True"
+			MDMProfile="True"
+			for ((i=0; i<40; i++)); do
+				if [[ -z $(/usr/bin/profiles show -all | grep "name: MDM Profile") ]]; then
+					MDMProfile="False"
 					UpdateScriptLog "MDM profile successfully removed."
 					break
 				fi
-				sleep 1
+				if (( i % 4 == 0 )); then
+					UpdateScriptLog "MDM PROFILE: Waiting for up to 10 minutes for MDM Profile to be removed."
+					DialogUpdate "progresstext: Waiting for up to 10 minutes for MDM Profile to be removed."
+				fi
+				sleep 15
 			done
-			if [[ "$ProfileRemoved" == "True" ]]; then
-				UpdateScriptLog "MDM PROFILE: MDM profile successfully removed."
-				DialogUpdate "progresstext: MDM profile successfully removed."
-			else
-				UpdateScriptLog "MDM PROFILE: MDM profile could not be removed after 5 minutes."
-				DialogUpdate "progresstext: MDM profile could not be removed after 5 minutes."
-				MDMProfileStatus="NonRemovable"
-				JamfMDMProfileUnremoveable
-			fi
 		fi
+	if [[ "$MDMProfile" == "False" ]]; then
+		UpdateScriptLog "MDM PROFILE: MDM profile successfully removed."
+		DialogUpdate "progresstext: MDM profile successfully removed."
+		sleep 3
+	else
+		UpdateScriptLog "MDM PROFILE: MDM profile could not be removed after 10 minutes."
+		DialogUpdate "progresstext: MDM profile could not be removed after 10 minutes."
+		sleep 3
 	fi
 
 	DialogUpdate "progresstext: Downloading MDM Profile"
