@@ -286,7 +286,7 @@ function JamfEnrollmentManual() {
 		fi
 	fi
 	
-	MDMProfile="False"
+	
 	# If MDM profile is removed then start manual enrollment
 	if [[ "$MDMProfile" == "False" ]]; then
 		UpdateScriptLog "MDM PROFILE: MDM profile successfully removed."
@@ -412,6 +412,7 @@ function DetectJamfEnrollment() {
 		UpdateScriptLog "JAMF ENROLLMENT: This Computer is NOT enrolled in UVA Enterprise Jamf"
 		DialogUpdate "progresstext: This Computer is NOT enrolled in UVA Enterprise Jamf"
 		JamfEnrolled="False"
+		MDMProfile="False"
 		sleep 3
 	fi
 }
