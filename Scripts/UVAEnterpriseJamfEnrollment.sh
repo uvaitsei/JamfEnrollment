@@ -286,7 +286,7 @@ function JamfEnrollmentManual() {
 			#Remove CA Certificate if it exists
 			if /usr/bin/profiles show -all | grep "name: CA Certificate"; then
 				DialogUpdate "progresstext: Removing CA Certificate"
-				/usr/bin/profiles remove -name "CA Certificate" <<< "y"
+				/usr/bin/profiles remove -name "CA Certificate"
 				sleep 3
 				# Wait up to 5 minutes for CA Certificate to be removed
 				CACertStatus="Removed"
