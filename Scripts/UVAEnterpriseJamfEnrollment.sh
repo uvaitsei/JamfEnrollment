@@ -1052,7 +1052,7 @@ if [[ "$EnrollmentType" == "Manual" ]]; then
 		sleep 3
 	fi
 	DialogUpdate "quit:"
-	ManualEnrollment
+	JamfManualEnrollmentDisplay
 fi
 
 
