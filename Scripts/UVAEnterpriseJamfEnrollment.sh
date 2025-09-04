@@ -271,7 +271,7 @@ function JamfEnrollmentManual() {
 	--position "bottomright" \
 	--activate "true" \
 	&
-
+	
 	if [[ "$JamfEnrolled" == "True" ]]; then
 		DialogUpdate "progresstext: Removing Jamf Framework"
 		RemoveJamfFramework
@@ -341,6 +341,11 @@ function RemoveCACertificate() {
 }
 
 function InstallCACertandMDMProfile() {
+	# Ensure CurrentUser is set
+	if [[ -z "$CurrentUser" ]]; then
+		CurrentUser=$( scutil <<< "show State:/Users/ConsoleUser" | awk '/Name :/ { print $3 }' )
+	fi
+
 	# If MDM profile is removed then start manual enrollment
 	if [[ "$MDMProfile" == "False" ]]; then
 		UpdateScriptLog "MDM PROFILE: MDM profile successfully removed."
