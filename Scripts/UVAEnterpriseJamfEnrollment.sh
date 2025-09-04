@@ -248,14 +248,13 @@ function JamfEnrollmentManual() {
 	--message "Please follow the guided instructions" \
 	--messagefont "size=12" \
 	--infotext "$ScriptName Version : $ScriptVersion" \
-	--ontop "true" \
 	--button1disabled "true" \
 	--commandfile "$SwiftCommandFile" \
-	--titlefont "shadow=true, size=40" \
+	--titlefont "shadow=true, size=20" \
 	--progress "100" \
 	--progresstext "Starting Manual Enrollment" \
 	--height "200" \
-	--position "bottomright" \
+	--position "bottom right" \
 	--activate "true" \
 	&
 
