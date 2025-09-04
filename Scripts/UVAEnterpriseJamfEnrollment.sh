@@ -77,10 +77,10 @@ ScriptLog="$ScriptLogPath$ScriptLogFile"
 TimeStamp=$(date +%Y-%m-%d\ %H:%M:%S)
 
 function CreateLogFile() {
-    if [[ ! -f "$ScriptLog" ]]; then
+	if [[ ! -f "$ScriptLog" ]]; then
 		mkdir -p "$ScriptLogPath"
-        touch "$ScriptLog"	
-    fi
+		touch "$ScriptLog"
+	fi
 }
 
 function UpdateScriptLog() {
