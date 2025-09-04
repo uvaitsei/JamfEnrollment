@@ -331,7 +331,7 @@ function RemoveCACertificate() {
 			fi
 			if (( i % 10 == 0 )); then
 				UpdateScriptLog "CA Certificate: Waiting for user to remove CA Certificate profile."
-				DialogUpdate "progresstext: Waiting for CA Certificate profile to be removed..."
+				DialogUpdate "progresstext: Please remove the CA Certificate profile by clicking the minus button"
 			fi
 			sleep 3
 		done
@@ -362,6 +362,8 @@ function InstallCACertandMDMProfile() {
 		open "https://itsemp.jamfcloud.com/enroll?invitation=68047365094878774605466781691869379248"
 		sleep 3
 	
+		#Make safari the front most app
+		osascript -e 'tell application "Safari" to activate'
 		#Wait for CACertificate to be installed
 		CACertMobileConfig="/Users/$CurrentUser/Downloads/CA Certificate.mobileconfig"
 		# Wait for CA Certificate.mobileconfig to exist in Downloads
@@ -391,7 +393,7 @@ function InstallCACertandMDMProfile() {
 
 			if (( i % 4 == 0 )); then
 				UpdateScriptLog "CA Certificate: Waiting for up to 10 minutes for CA Certificate to install."
-				DialogUpdate "progresstext: Please install the CA Certificate in the Device Management Window."
+				DialogUpdate "progresstext: Please install the CA Certificate by double-clicking it in the Device Management Window."
 			fi
 			sleep 3
 		done
@@ -437,7 +439,7 @@ function InstallCACertandMDMProfile() {
 
 			if (( i % 4 == 0 )); then
 				UpdateScriptLog "MDM PROFILE: Waiting for up to 10 minutes for MDM Profile to install."
-				DialogUpdate "progresstext: Please install the MDM Profile in the Device Management Window."
+				DialogUpdate "progresstext: Please install the MDM Profile by double-clicking it in the Device Management Window."
 			fi
 			sleep 3
 		done
@@ -873,13 +875,9 @@ function JamfManualEnrollmentDisplay() {
 	#Check Swift Dialog Version
 	DialogVersion=$( /usr/local/bin/dialog --version )
 	UpdateScriptLog "SWIFT DIALOG DISPLAY: Swift Dialog Version: $DialogVersion"
-	
-	EnrollmentInfo="### UVA Enterprise Jamf Manual Enrollment Instructions \
-	\n1. Open a web browser and go to the following URL: https://itsemp.jamfcloud.com/enroll \
-	\n2. When prompted, enter your UVA credentials to log in. \
-	\n3. Follow the on-screen instructions to download and install the MDM profile.\
-	\n4. Once the profile is installed, your device will be enrolled in UVA Enterprise Jamf. \
-	\n5. If you encounter any issues during the enrollment process, please contact the ITS Help Desk at (434) 924-HELP or helpdesk@virginia"
+
+	EnrollmentInfo="Follow the prompted instructiosns to complete the manual enrollment process. \
+	"
 
 	DialogBinary="/usr/local/bin/dialog"  
 
@@ -893,7 +891,7 @@ function JamfManualEnrollmentDisplay() {
 	--button1text "Enroll" \
 	--button2text "Cancel" \
 	--titlefont "shadow=true, size=40" \
-	--height "800" 
+	--height "300" 
 	
 	#Buttons
     case $? in
