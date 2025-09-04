@@ -281,6 +281,7 @@ function JamfEnrollmentManual() {
 	else
 		DialogUpdate "progresstext: Installing CA Certificate and MDM Profile"
 		InstallCACertandMDMProfile
+	fi
 }
 
 function RemoveJamfFramework() {
