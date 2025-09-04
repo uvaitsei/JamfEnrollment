@@ -274,13 +274,13 @@ function JamfEnrollmentManual() {
 	if [[ "$JamfEnrolled" == "True" ]]; then
 		DialogUpdate "progresstext: Removing Jamf Framework"
 		RemoveJamfFramework
+		DialogUpdate "progresstext: Removing CA Certificate"
 		RemoveCACertificate
+		DialogUpdate "progresstext: Installing CA Certificate and MDM Profile"
 		InstallCACertandMDMProfile
 	else
-		DialogUpdate "progresstext: Starting Manual Enrollment"
+		DialogUpdate "progresstext: Installing CA Certificate and MDM Profile"
 		InstallCACertandMDMProfile
-	fi
-	
 }
 
 function RemoveJamfFramework() {
