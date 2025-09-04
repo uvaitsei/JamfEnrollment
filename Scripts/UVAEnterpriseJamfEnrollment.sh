@@ -296,12 +296,26 @@ function JamfEnrollmentManual() {
 		#open invitation link
 		open "https://itsemp.jamfcloud.com/enroll?invitation=68047365094878774605466781691869379248"
 		sleep 3
-		#Open system settings to device management
-		DialogUpdate "progresstext: Please open System Settings to complete enrollment"
-		open "x-apple.systempreferences:com.apple.Profiles-Settings.extension"
-		DialogUpdate "progresstext: Installing CA Certificate"
-		#Wait for CACertificate to be installed
 	
+		#Wait for CACertificate to be installed
+		CACertMobileConfig="/Users/$CurrentUser/Downloads/CA Certificate.mobileconfig"
+		# Wait for CA Certificate.mobileconfig to exist in Downloads
+		for ((i=0; i<40; i++)); do
+			if [[ -f "$CACertMobileConfig" ]]; then
+				UpdateScriptLog "CA Certificate: CA Certificate.mobileconfig has been downloaded."
+				DialogUpdate "progresstext: Waiting for CA Certificate has been downloaded."
+				break
+			fi
+			if (( i % 4 == 0 )); then
+				UpdateScriptLog "CA Certificate: Waiting for CA Certificate.mobileconfig to be Downloaded."
+				DialogUpdate "progresstext: Waiting for CA Certificate download..."
+			fi
+			sleep 15
+		done
+
+		#Open system settings to device management
+		DialogUpdate "progresstext: Please use System Settings to install the CA Certificate"
+		open "x-apple.systempreferences:com.apple.Profiles-Settings.extension"
 		CAACertificate="False"
 		for ((i=0; i<40; i++)); do
 			if /usr/bin/profiles show -all | grep "name: CA Certificate"; then
@@ -311,7 +325,7 @@ function JamfEnrollmentManual() {
 			fi
 
 			if (( i % 4 == 0 )); then
-				UpdateScriptLog "CA Certificate: Waiting for up to 10 minutes for CA Certificate to install."
+				UpdateScriptLog "CA Certificate: Please install the CA Certificate."
 				DialogUpdate "progresstext: Waiting for up to 10 minutes for CA Certificate to install."
 			fi
 			sleep 15
@@ -326,7 +340,26 @@ function JamfEnrollmentManual() {
 			DialogUpdate "progresstext: CA Certificate could not be found after 5 minutes."
 			sleep 3
 		fi
-	
+
+		#Wait for MDMProfile to be installed
+		MDMProfileMobileConfig="/Users/$CurrentUser/Downloads/enrollmentProfile.mobileconfig"
+		# Wait for enrollmentProfile.mobileconfig to exist in Downloads
+		for ((i=0; i<40; i++)); do
+			if [[ -f "$MDMProfileMobileConfig" ]]; then
+				UpdateScriptLog "MDM Profile: enrollmentProfile.mobileconfig has been downloaded."
+				DialogUpdate "progresstext: Waiting for MDM Profile to be downloaded."
+				break
+			fi
+			if (( i % 4 == 0 )); then
+				UpdateScriptLog "MDM Profile: Waiting for enrollmentProfile.mobileconfig to be Downloaded."
+				DialogUpdate "progresstext: Waiting for MDM Profile download..."
+			fi
+			sleep 15
+		done
+
+		#Open system settings to device management
+		DialogUpdate "progresstext: Please use system settings to complete MDM Profile Install"
+		open "x-apple.systempreferences:com.apple.Profiles-Settings.extension"
 		MDMProfile="False"
 		for ((i=0; i<40; i++)); do
 			if /usr/bin/profiles show -all | grep "name: MDM Profile"; then
@@ -896,6 +929,16 @@ function CleanUp() {
 
 	#Add Any Cleanup Items Here. 
 	UpdateScriptLog "ClEANUP:"
+	#Delete MDMProfileMobileConfig
+	if [[ -f "$MDMProfileMobileConfig" ]]; then
+		/bin/rm -f "$MDMProfileMobileConfig"
+		UpdateScriptLog "CLEANUP: Deleted $MDMProfileMobileConfig"
+	fi	
+	#Delete CACertMobileConfig
+	if [[ -f "$CACertMobileConfig" ]]; then
+		/bin/rm -f "$CACertMobileConfig"
+		UpdateScriptLog "CLEANUP: Deleted $CACertMobileConfig"
+	fi	
 	DialogUpdate "quit:"
 
 }
