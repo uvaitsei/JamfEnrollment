@@ -261,14 +261,15 @@ function JamfEnrollmentManual() {
 	--title "UVA Jamf Manual Enrollment" \
 	--message "Please follow the guided instructions" \
 	--messagefont "size=16" \
+	--icon "none" \
 	--infotext "$ScriptName Version : $ScriptVersion" \
 	--button1disabled "true" \
 	--commandfile "$SwiftCommandFile" \
 	--titlefont "shadow=true, size=20" \
 	--progress "100" \
 	--progresstext "Starting Manual Enrollment" \
-	--height "400" \
-	--width "400" \
+	--height "500" \
+	--width "500" \
 	--position "bottomright" \
 	--activate "true" \
 	&
