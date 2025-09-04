@@ -275,9 +275,10 @@ function JamfEnrollmentManual() {
 		DialogUpdate "progresstext: Removing Jamf Framework"
 		RemoveJamfFramework
 		RemoveCACertificate
+		InstallCACertandMDMProfile
 	else
 		DialogUpdate "progresstext: Starting Manual Enrollment"
-		installCACertandMDMProfile
+		InstallCACertandMDMProfile
 	fi
 	
 }
