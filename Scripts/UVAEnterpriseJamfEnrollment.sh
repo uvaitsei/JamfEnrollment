@@ -283,6 +283,42 @@ function JamfEnrollmentManual() {
 				fi
 				sleep 15
 			done
+			#Remove CA Certificate if it exists
+			if /usr/bin/profiles show -all | grep "name: CA Certificate"; then
+				DialogUpdate "progresstext: Removing CA Certificate"
+				/usr/bin/profiles -R -p com.jamfsoftware.encrypted-profile-service-scep2
+				sleep 3
+				# Wait up to 5 minutes for CA Certificate to be removed
+				CACertStatus="Removed"
+				CACertificate="True"
+				for ((i=0; i<40; i++)); do
+
+					if [[ -z $(/usr/bin/profiles show -all | grep "name: CA Certificate") ]]; then
+						CACertificate="False"
+						UpdateScriptLog "CA Certificate successfully removed."
+						break
+					fi
+
+					if (( i % 4 == 0 )); then
+						UpdateScriptLog "CA Certificate: Waiting for up to 10 minutes for CA Certificate to be removed."
+						DialogUpdate "progresstext: Waiting for up to 10 minutes for CA Certificate to be removed."
+					fi
+					sleep 15
+				done
+				if [[ "$CACertificate" == "False" ]]; then
+					UpdateScriptLog "CA Certificate: successfully removed."
+					DialogUpdate "progresstext: CA Certificate successfully removed."
+					sleep 3
+				else
+					UpdateScriptLog "CA Certificate: could not be found after 10 minutes."
+					DialogUpdate "progresstext: CA Certificate could not be found after 10 minutes."
+					sleep 3
+				fi
+			else
+				UpdateScriptLog "CA Certificate: No CA Certificate Found to Remove"
+				DialogUpdate "progresstext: No CA Certificate Found to Remove"
+				sleep 3
+			fi
 		fi
 	fi
 	
