@@ -1,4 +1,16 @@
 #!/bin/bash
+###########################################################################
+#Script Name	:UVA Enterprise Jamf - Enrollment Launcher                                                               
+#Description	:				
+#				:				
+#				:		
+#				:                                                     
+#Author       	:Matt McChesney                                            
+#Email         	:mam5hs@virginia.edu
+#Organization	:UVA-ITS
+#Last Updated	:
+#Version		:1.6
+
 
 # Logging Variables
 # USER LOG PATH /Users/username/Library/Logs/UVA/ITS-JAMF/
@@ -6,7 +18,7 @@
 ScriptName="UVA Enterprise Jamf - Enrollment Launcher"
 Title="UVA Enterprise Jamf - Enrollment Launcher"
 Summary="Summary"
-ScriptVersion="1.5"
+ScriptVersion="1.6"
 ScriptLogPath="/var/log/UVA-JAMF/"
 ScriptLogFile="UVA-Jamf-$ScriptName.log"
 ScriptLog="$ScriptLogPath$ScriptLogFile"
@@ -30,7 +42,7 @@ function UpdateScriptLog() {
 UpdateScriptLog "Starting UVA Enterprise Jamf Enrollment Launcher..."
 # URL of the script to download
 SCRIPT_Name="EnrollmentLauncher.sh"
-SCRIPT_URL="https://raw.githubusercontent.com/uvaitsei/JamfEnrollment/refs/heads/Production/Scripts/UVAEnterpriseJamfEnrollment.sh"
+SCRIPT_URL="https://raw.githubusercontent.com/uvaitsei/JamfEnrollment/refs/heads/main/Scripts/UVAEnterpriseJamfEnrollment.sh"
 ASMAPI="/private/var/tmp/UVAASM/uva.asmprod.plist"
 
 # Confirm ASMAPI exists
