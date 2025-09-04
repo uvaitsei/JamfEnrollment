@@ -254,7 +254,7 @@ function JamfEnrollmentManual() {
 	--progress "100" \
 	--progresstext "Starting Manual Enrollment" \
 	--height "200" \
-	--position "bottom right" \
+	--position "bottomright" \
 	--activate "true" \
 	&
 
@@ -928,7 +928,7 @@ function AutomatedEnrollment() {
 function CleanUp() {
 
 	#Add Any Cleanup Items Here. 
-	UpdateScriptLog "ClEANUP:"
+	UpdateScriptLog "CLEANUP: Removing Temporary Files"
 	#Delete MDMProfileMobileConfig
 	if [[ -f "$MDMProfileMobileConfig" ]]; then
 		/bin/rm -f "$MDMProfileMobileConfig"
@@ -938,7 +938,7 @@ function CleanUp() {
 	if [[ -f "$CACertMobileConfig" ]]; then
 		/bin/rm -f "$CACertMobileConfig"
 		UpdateScriptLog "CLEANUP: Deleted $CACertMobileConfig"
-	fi	
+	fi
 	DialogUpdate "quit:"
 
 }
