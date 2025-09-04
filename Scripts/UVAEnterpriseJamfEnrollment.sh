@@ -116,7 +116,7 @@ function CreateSwiftDialogCommandFile() {
 }
 
 
-function JamfEnrollmenStatus() {
+function JamfEnrollmentStatus() {
 	
 	UpdateScriptLog "SWIFT DIALOG DISPLAY: Starting"
 
@@ -1018,8 +1018,7 @@ CurrentLoggedInUser
 SwiftDialogCheck
 
 ##Script Functions
-JamfEnrollmenStatus
-DetectJamfEnrollment
+JamfEnrollmentStatus
 #Check Needed Files
 CheckFilesNeeded
 
