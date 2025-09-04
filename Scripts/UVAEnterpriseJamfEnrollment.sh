@@ -79,15 +79,8 @@ TimeStamp=$(date +%Y-%m-%d\ %H:%M:%S)
 function CreateLogFile() {
     if [[ ! -f "$ScriptLog" ]]; then
 		mkdir -p "$ScriptLogPath"
-        touch "$ScriptLog"
-		
+        touch "$ScriptLog"	
     fi
-		fi
-	else
-		UpdateScriptLog "JAMF ENROLLMENT: This Computer is NOT enrolled in UVA Enterprise Jamf"
-		DialogUpdate "progresstext: This Computer is NOT enrolled in UVA Enterprise Jamf"
-		sleep 3
-	fi
 }
 
 function UpdateScriptLog() {
