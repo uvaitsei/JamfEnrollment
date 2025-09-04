@@ -286,7 +286,14 @@ function JamfEnrollmentManual() {
 			#Remove CA Certificate if it exists
 			if /usr/bin/profiles show -all | grep "name: CA Certificate"; then
 				DialogUpdate "progresstext: Removing CA Certificate"
-				/usr/bin/profiles remove -name "CA Certificate"
+				# Find the UUID for the CA Certificate profile
+				CACertUUID=$(/usr/bin/profiles -C | awk '/name: CA Certificate/{getline; if ($1 == "uuid:") print $2}')
+				if [[ -n "$CACertUUID" ]]; then
+					/usr/bin/profiles remove -uuid "$CACertUUID"
+					UpdateScriptLog "CA Certificate: Removed profile with UUID $CACertUUID"
+				else
+					UpdateScriptLog "CA Certificate: UUID not found, could not remove profile."
+				fi
 				sleep 3
 				# Wait up to 5 minutes for CA Certificate to be removed
 				CACertStatus="Removed"
@@ -414,18 +421,18 @@ function JamfEnrollmentManual() {
 				UpdateScriptLog "MDM PROFILE: Waiting for up to 10 minutes for MDM Profile to install."
 				DialogUpdate "progresstext: Please install the MDM Profile in the Device Management Window."
 			fi
-			sleep 15
+			sleep 3
 		done
 
 		if [[ "$MDMProfile" == "True" ]]; then
 			UpdateScriptLog "MDM PROFILE: MDM profile successfully installed."
 			DialogUpdate "progresstext: MDM profile successfully installed."
-			sleep 20
+			sleep 5 
 			CleanUp
 		else
 			UpdateScriptLog "MDM PROFILE: MDM profile could not be found after 10 minutes."
 			DialogUpdate "progresstext: MDM profile could not be found after 10 minutes."
-			sleep 20
+			sleep 5
 			CleanUp
 		fi
 	fi
