@@ -282,7 +282,7 @@ function JamfEnrollmentManual() {
 	
 }
 
-function RemoveJamfFramework {
+function RemoveJamfFramework() {
 	DialogUpdate "progresstext: Removing Jamf Framework"
 	sleep 3
 	# Remove Jamf Framework
@@ -310,7 +310,7 @@ function RemoveJamfFramework {
 	fi
 }
 
-function RemoveCACertificate {
+function RemoveCACertificate() {
 	# Detect if CA Certificate exists by name
 	if /usr/bin/profiles show -all | grep "name: CA Certificate" &> /dev/null; then
 		UpdateScriptLog "CA Certificate: Detected existing CA Certificate profile."
@@ -337,7 +337,7 @@ function RemoveCACertificate {
 	fi
 }
 
-function InstallCACertandMDMProfile {
+function InstallCACertandMDMProfile() {
 	# If MDM profile is removed then start manual enrollment
 	if [[ "$MDMProfile" == "False" ]]; then
 		UpdateScriptLog "MDM PROFILE: MDM profile successfully removed."
