@@ -233,7 +233,7 @@ function JamfEnrollmentAutmated() {
 
 
 
-function JamfEnrollmentManualDisplay() {
+function JamfEnrollmentManual() {
 	
 	UpdateScriptLog "SWIFT DIALOG DISPLAY: Starting"
 
