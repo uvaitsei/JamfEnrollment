@@ -10,7 +10,7 @@
 #Email         	:mam5hs@virginia.edu
 #Organization	:UVA-ITS
 #Last Updated	:
-#Version		:1.6
+#Version		:1.7
 
 ###########################################################################
 # Script Change History
@@ -70,7 +70,7 @@ VerboseMode="True"
 ScriptName="UVA Enterprise Jamf - Enrollment"
 Title="UVA Enterprise Jamf - Enrollment"
 Summary="Summary"
-ScriptVersion="1.6"
+ScriptVersion="1.7"
 ScriptLogPath="/var/log/UVA-JAMF/"
 ScriptLogFile="UVA-Jamf-$ScriptName.log"
 ScriptLog="$ScriptLogPath$ScriptLogFile"
@@ -295,9 +295,55 @@ function JamfEnrollmentManual() {
 	#open
 	open "https://itsemp.jamfcloud.com/enroll?invitation=68047365094878774605466781691869379248"
 	sleep 3
-	DialogUpdate "progresstext: Installing MDM Profile"
-
-	DialogUpdate "quit:"
+	#Opnen system setttings to device management
+	DialogUpdate "progresstext: Please open System Settings to complete enrollment"
+	open "x-apple.systempreferences:com.apple.preferences.sharing?MDM"
+	DialogUpdate "progresstext: Installing CA Certificate"
+	#Wait for CACertificate to be installed
+	CAACertificate="False"
+	for ((i=0; i<300; i++)); do
+		if /usr/bin/profiles show -all | grep -A 10 "attribute: CA Certificate"; then
+			CAACertificate="True"
+			UpdateScriptLog "CA Certificate: successfully installed."
+			break
+		fi
+		if (( i % 10 == 0 )); then
+			UpdateScriptLog "CA Certificate: Waiting for up to 5 minutes for CA Certificate to install."
+			DialogUpdate "progresstext: Waiting for up to 5 minutes for CA Certificate to install."
+		fi
+		sleep 1
+	done
+	if [[ "$CAACertificate" == "True" ]]; then
+		UpdateScriptLog "CA Certificate: successfully installed."
+		DialogUpdate "progresstext: CA Certificate successfully installed."
+		sleep 3
+	else
+		UpdateScriptLog "CA Certificate: could not be found after 5 minutes."
+		DialogUpdate "progresstext: CA Certificate could not be found after 5 minutes."
+		sleep 3
+	fi
+	MDMProfile="False"
+	for ((i=0; i<300; i++)); do
+		if /usr/bin/profiles show -all | grep -A 10 "attribute: MDM Profile"; then
+			MDMProfile="True"
+			UpdateScriptLog "MDM profile successfully installed."
+			break
+		fi
+		if (( i % 10 == 0 )); then
+			UpdateScriptLog "MDM PROFILE: Waiting for up to 5 minutes for MDM Profile to install."
+			DialogUpdate "progresstext: Waiting for up to 5 minutes for MDM Profile to install."
+		fi
+		sleep 1
+	done
+	if [[ "$MDMProfile" == "True" ]]; then
+		UpdateScriptLog "MDM PROFILE: MDM profile successfully installed."
+		DialogUpdate "progresstext: MDM profile successfully installed."
+		sleep 3
+	else
+		UpdateScriptLog "MDM PROFILE: MDM profile could not be found after 5 minutes."
+		DialogUpdate "progresstext: MDM profile could not be found after 5 minutes."
+		sleep 3
+	fi
 	
 }
 
@@ -840,6 +886,7 @@ function CleanUp() {
 
 	#Add Any Cleanup Items Here. 
 	UpdateScriptLog "ClEANUP:"
+	DialogUpdate "quit:"
 
 }
 
