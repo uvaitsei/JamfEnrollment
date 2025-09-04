@@ -280,6 +280,8 @@ function JamfEnrollmentManual() {
 		DialogUpdate "progresstext: Installing CA Certificate and MDM Profile"
 		InstallCACertandMDMProfile
 	else
+		DialogUpdate "progresstext: Removing CA Certificate if it exists"
+		RemoveCACertificate
 		DialogUpdate "progresstext: Installing CA Certificate and MDM Profile"
 		InstallCACertandMDMProfile
 	fi
@@ -351,7 +353,7 @@ function InstallCACertandMDMProfile() {
 		UpdateScriptLog "MDM PROFILE: MDM profile successfully removed."
 		DialogUpdate "progresstext: MDM profile successfully removed."
 		sleep 3
-		DialogUpdate "progresstext: Downloading MDM Profile"
+		DialogUpdate "progresstext: Opening Browser to Enrollment Page"
 		#close any open browsers
 		osascript -e 'quit app "Safari"'
 		osascript -e 'quit app "Google Chrome"'
