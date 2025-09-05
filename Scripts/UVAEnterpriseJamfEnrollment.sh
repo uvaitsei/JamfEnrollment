@@ -409,7 +409,7 @@ function InstallCACertandMDMProfile() {
 		osascript -e 'quit app "Google Chrome"'
 		osascript -e 'quit app "Firefox"'
 		#open invitation link
-		open "https://itsemp.jamfcloud.com/enroll?invitation=$SiteEnrollmentInvitation"
+		open "https://itsemp.jamfcloud.com/enroll?invitation=$SiteEnrollmentInvitationEncoded"
 		sleep 3
 	
 		#Make safari the front most app
@@ -662,13 +662,12 @@ function CheckFilesNeeded() {
 	fi
 	if test -f "$SITEINFO"
 	then
-		UpdateScriptLog "SITE INFO VARIABLES CHECK: $SITEINFO Detected"
-		SiteDisplayName=$(defaults read "$SITEINFO" Display Name 2>/dev/null)
+		SiteDisplayName=$(defaults read "$SITEINFO" "Display Name" 2>/dev/null)
 		SiteName=$(defaults read "$SITEINFO" SiteName 2>/dev/null)
 		SiteEnrollmentInvitation=$(defaults read "$SITEINFO" EnrollmentInvitation 2>/dev/null)
 		UpdateScriptLog "SITE INFO VARIABLES CHECK: Site Display Name: $SiteDisplayName"
 		UpdateScriptLog "SITE INFO VARIABLES CHECK: Site Name: $SiteName"
-		UpdateScriptLog "SITE INFO VARIABLES CHECK: Site Enrollment Invitation: $SiteEnrollmentInvitation"
+		UpdateScriptLog "SITE INFO VARIABLES CHECK: Site Enrollment Invitation (should be a URL-safe token for Jamf enrollment): $SiteEnrollmentInvitation"
 	else
 		UpdateScriptLog "SITE INFO VARIABLES CHECK: No Site Info Variables Detected Use Default Setting"
 		SiteDisplayName="Not Found"
