@@ -117,6 +117,18 @@ function CreateSwiftDialogCommandFile() {
     chmod 755 $SwiftCommandDirectory
 }
 
+function DeleteSwiftDialogCommandFile() {
+	if [ -f "$SwiftCommandFile" ]; then
+		UpdateScriptLog "Swift Command File: Deleting $SwiftCommandFile"
+		/bin/rm -f $SwiftCommandFile
+	fi
+
+	if [ -d "$SwiftCommandDirectory" ]; then
+		UpdateScriptLog "Swift Command Directory: Deleting $SwiftCommandDirectory"
+		/bin/rm -fR $SwiftCommandDirectory
+	fi
+}		
+
 
 function JamfEnrollmentStatus() {
 	
@@ -125,9 +137,9 @@ function JamfEnrollmentStatus() {
 	#Check Swift Dialog Version
 	DialogVersion=$( /usr/local/bin/dialog --version )
 	UpdateScriptLog "SWIFT DIALOG DISPLAY: Swift Dialog Version: $DialogVersion"
-	
-	DialogBinary="/usr/local/bin/dialog"  
-	
+
+	CreateSwiftDialogCommandFile
+	DialogBinary="/usr/local/bin/dialog"
 	$DialogBinary \
 	--title "$Title" \
 	--message "Checking UVA Enterprise Jamf Enrollment" \
@@ -167,6 +179,7 @@ function JamfEnrollmentStatus() {
 		SiteEnrollmentInvitation="False"
 	fi
 
+	DeleteSwiftDialogCommandFile
 }
 
 function JamfEnrollmentAutmated() {
@@ -176,9 +189,8 @@ function JamfEnrollmentAutmated() {
 	#Check Swift Dialog Version
 	DialogVersion=$( /usr/local/bin/dialog --version )
 	UpdateScriptLog "SWIFT DIALOG DISPLAY: Swift Dialog Version: $DialogVersion"
-	
+	CreateSwiftDialogCommandFile
 	DialogBinary="/usr/local/bin/dialog"  
-	
 	$DialogBinary \
 	--title "$Title" \
 	--message "Guided Automated Enrollment" \
@@ -255,7 +267,8 @@ function JamfEnrollmentAutmated() {
 		sleep 30
 		CleaanUp
 	fi
-
+	
+	DeleteSwiftDialogCommandFile
 }
 
 
@@ -267,9 +280,9 @@ function JamfEnrollmentManual() {
 	#Check Swift Dialog Version
 	DialogVersion=$( /usr/local/bin/dialog --version )
 	UpdateScriptLog "SWIFT DIALOG DISPLAY: Swift Dialog Version: $DialogVersion"
-	
-	DialogBinary="/usr/local/bin/dialog"  
-	
+
+	CreateSwiftDialogCommandFile
+	DialogBinary="/usr/local/bin/dialog"
 	$DialogBinary \
 	--title "Manual Enrollment" \
 	--messagefont "size=16" \
@@ -300,6 +313,8 @@ function JamfEnrollmentManual() {
 		DialogUpdate "progresstext: Installing CA Certificate and MDM Profile"
 		InstallCACertandMDMProfile
 	fi
+
+	DeleteSwiftDialogCommandFile
 
 }
 
@@ -336,6 +351,7 @@ function RemoveCACertificate() {
 	# Detect if CA Certificate exists by name
 	if /usr/bin/profiles show -all | grep "name: CA Certificate" &> /dev/null; then
 
+		CreateSwiftDialogCommandFile
 		#CA Certificate Remove Window
 		DialogBinary="/usr/local/bin/dialog"  
 		$DialogBinary \
@@ -362,6 +378,9 @@ function RemoveCACertificate() {
 			if [[ -z $(/usr/bin/profiles show -all | grep "name: CA Certificate") ]]; then
 				UpdateScriptLog "CA Certificate: Profile successfully removed."
 				DialogUpdate "progresstext: CA Certificate profile successfully removed."
+				#Close previous dialog windows
+				DialogUpdate "quit:"
+				DeleteSwiftDialogCommandFile
 				break
 			fi
 			if (( i % 10 == 0 )); then
@@ -376,9 +395,6 @@ function RemoveCACertificate() {
 		sleep 3
 	fi
 
-	#Close previous dialog windows
-	DialogUpdate "quit:"
-
 }
 
 function InstallCACertandMDMProfile() {
@@ -387,6 +403,7 @@ function InstallCACertandMDMProfile() {
 		CurrentUser=$( scutil <<< "show State:/Users/ConsoleUser" | awk '/Name :/ { print $3 }' )
 	fi
 
+	CreateSwiftDialogCommandFile
 	#CA Certificate Download Window
 	DialogBinary="/usr/local/bin/dialog"  
 	$DialogBinary \
@@ -444,6 +461,7 @@ function InstallCACertandMDMProfile() {
 			DialogUpdate "progresstext: CA Certificate has been downloaded."
 			sleep 3
 			DialogUpdate "quit:"
+			DeleteSwiftDialogCommandFile
 		fi
 
 		#CA Certificate Install Window
@@ -487,6 +505,7 @@ function InstallCACertandMDMProfile() {
 			DialogUpdate "progresstext: CA Certificate successfully installed."
 			sleep 3
 			DialogUpdate "quit:"
+			DeleteSwiftDialogCommandFile
 		else
 			UpdateScriptLog "CA Certificate: could not be found after 5 minutes."
 			DialogUpdate "progresstext: CA Certificate could not be found after 5 minutes."
@@ -543,7 +562,9 @@ function InstallCACertandMDMProfile() {
 			DialogUpdate "progresstext: MDM Profile has been downloaded."
 			sleep 3
 			DialogUpdate "quit:"
+			DeleteSwiftDialogCommandFile
 		fi
+
 
 		#MDM Profile Install Window
 		DialogBinary="/usr/local/bin/dialog"  
