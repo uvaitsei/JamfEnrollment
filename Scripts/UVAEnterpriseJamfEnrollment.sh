@@ -1116,19 +1116,25 @@ function PreCleanUp() {
 
 	#Add Any Cleanup Items Here.
 	#Close Safari if it is open
+	UpdateScriptLog "PREFLIGHT:CLEANUP: Close Safari if it is open"
 	osascript -e 'quit app "Safari"'
 	#Close System Settings if it is open
+	UpdateScriptLog "PREFLIGHT:CLEANUP: Removing Temporary Files"
 	osascript -e 'quit app "System Settings"'
-	UpdateScriptLog "CLEANUP: Removing Temporary Files"
+	#Remove any previous Swift Command File
+	if [[ -f "$SwiftCommandFile" ]]; then
+		/bin/rm -f "$SwiftCommandFile"
+		UpdateScriptLog "PREFLIGHT:CLEANUP: Deleted $SwiftCommandFile"
+	fi
 	#Delete MDMProfileMobileConfig
 	if [[ -f "$MDMProfileMobileConfig" ]]; then
 		/bin/rm -f "$MDMProfileMobileConfig"
-		UpdateScriptLog "CLEANUP: Deleted $MDMProfileMobileConfig"
+		UpdateScriptLog "PREFLIGHT:CLEANUP: Deleted $MDMProfileMobileConfig"
 	fi	
 	#Delete CACertMobileConfig
 	if [[ -f "$CACertMobileConfig" ]]; then
 		/bin/rm -f "$CACertMobileConfig"
-		UpdateScriptLog "CLEANUP: Deleted $CACertMobileConfig"
+		UpdateScriptLog "PREFLIGHT:CLEANUP: Deleted $CACertMobileConfig"
 	fi
 	#Close Swift Dialog
 	DialogUpdate "quit:"
