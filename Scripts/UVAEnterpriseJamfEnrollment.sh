@@ -328,7 +328,6 @@ function RemoveCACertificate() {
 	
 	$DialogBinary \
 	--title "UVA Jamf Manual Enrollment" \
-	--message "Please follow the guided instructions" \
 	--messagefont "size=16" \
 	--icon "none" \
 	--image "https://github.com/uvaitsei/JamfImages/blob/main/SCREENSHOTS/Enrollment/Remove%20CA%20Certificate.jpg?raw=true" \
@@ -375,6 +374,26 @@ function InstallCACertandMDMProfile() {
 		CurrentUser=$( scutil <<< "show State:/Users/ConsoleUser" | awk '/Name :/ { print $3 }' )
 	fi
 
+	DialogUpdate "quit:"
+	DialogBinary="/usr/local/bin/dialog"  
+	
+	$DialogBinary \
+	--title "UVA Jamf Manual Enrollment" \
+	--messagefont "size=16" \
+	--icon "none" \
+	--image "https://github.com/uvaitsei/JamfImages/blob/main/SCREENSHOTS/Enrollment/Install%20CA%20Cert%20Download.jpg?raw=true" \
+	--infotext "$ScriptName Version : $ScriptVersion" \
+	--button1disabled "true" \
+	--commandfile "$SwiftCommandFile" \
+	--titlefont "shadow=true, size=20" \
+	--progress "100" \
+	--progresstext "Starting Manual Enrollment" \
+	--height "500" \
+	--width "500" \
+	--position "bottomright" \
+	--activate "true" \
+	&
+
 	# If MDM profile is removed then start manual enrollment
 	if [[ "$MDMProfile" == "False" ]]; then
 		DialogUpdate "progresstext: Opening Browser to Enrollment Page"
@@ -402,6 +421,26 @@ function InstallCACertandMDMProfile() {
 			fi
 			sleep 3
 		done
+
+		DialogUpdate "quit:"
+		DialogBinary="/usr/local/bin/dialog"  
+	
+		$DialogBinary \
+		--title "UVA Jamf Manual Enrollment" \
+		--messagefont "size=16" \
+		--icon "none" \
+		--image "https://github.com/uvaitsei/JamfImages/blob/main/SCREENSHOTS/Enrollment/Install%20CA%20Cert%20Device%20Management%20Window%201.jpg?raw=true" \
+		--infotext "$ScriptName Version : $ScriptVersion" \
+		--button1disabled "true" \
+		--commandfile "$SwiftCommandFile" \
+		--titlefont "shadow=true, size=20" \
+		--progress "100" \
+		--height "500" \
+		--width "500" \
+		--position "bottomright" \
+		--activate "true" \
+		&
+
 		#Open system settings to device management
 		DialogUpdate "progresstext: Please use System Settings to install the CA Certificate"
 		open "x-apple.systempreferences:com.apple.Profiles-Settings.extension"
