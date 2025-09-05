@@ -667,7 +667,7 @@ function CheckFilesNeeded() {
 		SiteEnrollmentInvitation=$(defaults read "$SITEINFO" EnrollmentInvitation 2>/dev/null)
 		UpdateScriptLog "SITE INFO VARIABLES CHECK: Site Display Name: $SiteDisplayName"
 		UpdateScriptLog "SITE INFO VARIABLES CHECK: Site Name: $SiteName"
-		UpdateScriptLog "SITE INFO VARIABLES CHECK: Site Enrollment Invitation (should be a URL-safe token for Jamf enrollment): $SiteEnrollmentInvitation"
+		UpdateScriptLog "SITE INFO VARIABLES CHECK: Site Enrollment Invitation: $SiteEnrollmentInvitation"
 	else
 		UpdateScriptLog "SITE INFO VARIABLES CHECK: No Site Info Variables Detected Use Default Setting"
 		SiteDisplayName="Not Found"
