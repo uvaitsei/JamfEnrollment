@@ -229,6 +229,7 @@ function JamfEnrollmentAutmated() {
 		else
 			UpdateScriptLog "JAMF REMOVAL: ERROR: Jamf Framework Could Not be Removed"
 			DialogUpdate "progresstext: ERROR: Jamf Framework Could Not be Removed"
+			JamfMDMProfileUnremoveable
 			sleep 3
 		fi
 	fi
@@ -243,7 +244,7 @@ function JamfEnrollmentAutmated() {
 		UpdateScriptLog "MDM PROFILE: MDM profile could not be found after 5 minutes."
 		DialogUpdate "progresstext: MDM profile could not be found after 5 minutes."
 		sleep 30
-		DialogUpdate "quit:"
+		CleaanUp
 	fi
 
 }
@@ -261,10 +262,7 @@ function JamfEnrollmentManual() {
 	DialogBinary="/usr/local/bin/dialog"  
 	
 	$DialogBinary \
-	--title "$SiteDisplayName" \
-	--message "This Computer will be Enrolled to /n \
-	Site: $SiteName /n \
-	Using this Enrollment Invitation: $SiteEnrollmentInvitation" \
+	--title "Manual Enrollment" \
 	--messagefont "size=16" \
 	--icon "none" \
 	--image "https://github.com/uvaitsei/JamfImages/blob/main/ICONS/COMMON-UVA-USER-ICON.png?raw=true" \
@@ -402,7 +400,7 @@ function InstallCACertandMDMProfile() {
 		osascript -e 'quit app "Google Chrome"'
 		osascript -e 'quit app "Firefox"'
 		#open invitation link
-		open "https://itsemp.jamfcloud.com/enroll?invitation=68047365094878774605466781691869379248"
+		open "https://itsemp.jamfcloud.com/enroll?invitation=$SiteEnrollmentInvitation"
 		sleep 3
 	
 		#Make safari the front most app
@@ -465,6 +463,7 @@ function InstallCACertandMDMProfile() {
 		else
 			UpdateScriptLog "CA Certificate: could not be found after 5 minutes."
 			DialogUpdate "progresstext: CA Certificate could not be found after 5 minutes."
+			CleanUp
 			sleep 3
 		fi
 		
@@ -1013,13 +1012,16 @@ function JamfManualEnrollmentDisplay() {
 	DialogVersion=$( /usr/local/bin/dialog --version )
 	UpdateScriptLog "SWIFT DIALOG DISPLAY: Swift Dialog Version: $DialogVersion"
 
-	EnrollmentInfo="Follow the prompted instructiosns to complete the manual enrollment process. \
-	"
+	EnrollmentInfo="Follow the prompted instructions to complete the manual enrollment process. n/ \
+	This computer will be enrolled in: n/ \
+	Organization: $SiteDisplayName n/ \
+	Site Name: $SiteName n/ \
+	Using this Enrollment Invitation: $SiteEnrollmentInvitation"
 
 	DialogBinary="/usr/local/bin/dialog"  
 
 	$DialogBinary \
-	--title "UVA Enterprise Jamf Manual Enrollment" \
+	--title "$SiteDisplayName Enrollment" \
 	--message "$EnrollmentInfo" \
 	--messagefont "size=16" \
 	--bannerimage "https://github.com/uvaitsei/JamfImages/blob/main/BANNERS/BLUEBACK-820-150.png?raw=true" \
