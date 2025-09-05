@@ -1005,6 +1005,12 @@ function UpdateJamfInventory() {
 
 #Script Initilization
 ###########################################################################
+#Kill any previous Swift Dialog process
+KillProcess "dialog"
+
+#kill any previous Caffeinate process
+KillProcess "caffeinate"
+
 CreateLogFile
 UpdateScriptLog "SCRIPT HEADER: $Title - $ScriptName - Version: $ScriptVersion : Start"
 CreateSwiftDialogCommandFile
@@ -1015,9 +1021,6 @@ WaitForSetupAssistant
 WaitForFinder
 CurrentLoggedInUser
 SwiftDialogCheck
-
-#Kill any previous Swift Dialog process
-KillProcess "dialog"
 
 ##Script Functions
 JamfEnrollmentStatus
