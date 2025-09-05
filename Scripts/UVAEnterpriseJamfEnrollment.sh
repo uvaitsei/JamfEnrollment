@@ -372,7 +372,7 @@ function InstallCACertandMDMProfile() {
 			fi
 			if (( i % 4 == 0 )); then
 				UpdateScriptLog "CA Certificate: Waiting for CA Certificate.mobileconfig to be Downloaded."
-				DialogUpdate "progresstext: Download CA Certificate by clicking Continue in the browser window."]
+				DialogUpdate "progresstext: Download CA Certificate by clicking Continue in the browser window."
 			fi
 			sleep 3
 		done
