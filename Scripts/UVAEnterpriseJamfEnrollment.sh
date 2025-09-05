@@ -662,7 +662,7 @@ function CheckFilesNeeded() {
 	fi
 	if test -f "$SITEINFO"
 	then
-		SiteDisplayName=$(defaults read "$SITEINFO" "Display Name" 2>/dev/null)
+		SiteDisplayName=$(defaults read "$SITEINFO" DisplayName 2>/dev/null)
 		SiteName=$(defaults read "$SITEINFO" SiteName 2>/dev/null)
 		SiteEnrollmentInvitation=$(defaults read "$SITEINFO" EnrollmentInvitation 2>/dev/null)
 		UpdateScriptLog "SITE INFO VARIABLES CHECK: Site Display Name: $SiteDisplayName"
