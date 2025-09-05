@@ -76,6 +76,8 @@ ScriptLogFile="UVA-Jamf-$ScriptName.log"
 ScriptLog="$ScriptLogPath$ScriptLogFile"
 TimeStamp=$(date +%Y-%m-%d\ %H:%M:%S)
 
+
+
 function CreateLogFile() {
     if [[ ! -f "$ScriptLog" ]]; then
 		mkdir -p "$ScriptLogPath"
@@ -1013,6 +1015,9 @@ WaitForSetupAssistant
 WaitForFinder
 CurrentLoggedInUser
 SwiftDialogCheck
+
+#Kill any previous Swift Dialog process
+KillProcess "dialog"
 
 ##Script Functions
 JamfEnrollmentStatus
