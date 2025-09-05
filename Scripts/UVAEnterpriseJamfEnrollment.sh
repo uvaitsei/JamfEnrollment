@@ -158,6 +158,16 @@ function JamfEnrollmentStatus() {
 		sleep 5
 	fi
 
+	#Check for SITEINFO="/Library/Application Support/UVAJamfEnrollment/uva.jamfsite.plist"
+	if [[ -f "/Library/Application Support/UVAJamfEnrollment/uva.jamfsite.plist" ]]; then
+		UpdateScriptLog "JAMF ENROLLMENT: Site Information found for $SiteName"
+		DialogUpdate "progresstext: Site Information found for $SiteName"
+	else
+		UpdateScriptLog "JAMF ENROLLMENT: Site Information NOT found"
+		DialogUpdate "progresstext: Site Information NOT found"
+		SiteEnrollmentInvitation="False"
+	fi
+
 }
 
 function JamfEnrollmentAutmated() {
@@ -1036,7 +1046,7 @@ function JamfManualEnrollmentDisplay() {
     case $? in
         0)
         # Button 1 processing here
-        UpdateScriptLog "MANUAL ENROLL BUTTON: $CurrentUser Pressed (Enroll"
+        UpdateScriptLog "MANUAL ENROLL BUTTON: $CurrentUser Pressed (Enroll)"
 		JamfEnrollmentManual
 		exit 0
         ;;
