@@ -331,8 +331,10 @@ function RemoveJamfFramework() {
 }
 
 function RemoveCACertificate() {
-
-	#CA Certificate Remove Windoow
+	#Close previous dialog windows
+	DialogUpdate "quit:"
+	sleep 3
+	#CA Certificate Remove Window
 	DialogBinary="/usr/local/bin/dialog"  
 	$DialogBinary \
 	--title "UVA Jamf Manual Enrollment" \
@@ -382,6 +384,9 @@ function InstallCACertandMDMProfile() {
 		CurrentUser=$( scutil <<< "show State:/Users/ConsoleUser" | awk '/Name :/ { print $3 }' )
 	fi
 
+	#Close previous dialog windows
+	DialogUpdate "quit:"
+	sleep 3
 	#CA Certificate Download Window
 	DialogBinary="/usr/local/bin/dialog"  
 	$DialogBinary \
@@ -423,13 +428,23 @@ function InstallCACertandMDMProfile() {
 				break
 			fi
 			if (( i % 4 == 0 )); then
-				UpdateScriptLog "CA Certificate: Waiting for CA Certificate.mobileconfig to be Downloaded."
+				UpdateScriptLog "CA Certificate: Waiting 5min for CA Certificate.mobileconfig to be Downloaded."
 				DialogUpdate "progresstext: Download CA Certificate by clicking Continue in the browser window."
 			fi
 			sleep 3
 		done
+		#If CA Certificate is not downloaded then exit
+		if [[ ! -f "$CACertMobileConfig" ]]; then
+			UpdateScriptLog "CA Certificate: CA Certificate.mobileconfig was not downloaded after 5 minutes."
+			DialogUpdate "progresstext: CA Certificate.mobileconfig was not downloaded after 5 minutes."
+			CleanUp
+			sleep 3
+		fi
 
-		#CA Certificate Install Windoww
+		#Close previous dialog windows
+		DialogUpdate "quit:"
+		sleep 3
+		#CA Certificate Install Window
 		DialogBinary="/usr/local/bin/dialog"  
 		$DialogBinary \
 		--title "UVA Jamf Manual Enrollment" \
@@ -476,6 +491,9 @@ function InstallCACertandMDMProfile() {
 			sleep 3
 		fi
 		
+		#Close previous dialog windows
+		DialogUpdate "quit:"
+		sleep 3
 		#MDM Profile Download Window
 		DialogBinary="/usr/local/bin/dialog"  
 		$DialogBinary \
@@ -513,6 +531,9 @@ function InstallCACertandMDMProfile() {
 			sleep 3
 		done
 
+		#Close previous dialog windows
+		DialogUpdate "quit:"
+		sleep 3
 		#MDM Profile Install Window
 		DialogBinary="/usr/local/bin/dialog"  
 		$DialogBinary \
@@ -552,6 +573,10 @@ function InstallCACertandMDMProfile() {
 
 		if [[ "$MDMProfile" == "True" ]]; then
 			UpdateScriptLog "MDM PROFILE: MDM profile successfully installed."
+
+			#Close previous dialog windows
+			DialogUpdate "quit:"
+			sleep 3
 			DialogBinary="/usr/local/bin/dialog"  
 			$DialogBinary \
 			--title "UVA Jamf Manual Enrollment" \
@@ -1091,6 +1116,7 @@ function CleanUp() {
 
 	#Add Any Cleanup Items Here.
 	#Close Safari if it is open
+	UpdateScriptLog "CLEANUP: Close Safari if it is open"
 	osascript -e 'quit app "Safari"'
 	#Close System Settings if it is open
 	osascript -e 'quit app "System Settings"'
@@ -1220,4 +1246,3 @@ DisableCaffeinate
 UpdateScriptLog "SCRIPT FOOTER: $Title - $ScriptName - Version: $ScriptVersion : End"
 SendTeamsMessage
 CleanUp
-exit 0
