@@ -324,8 +324,6 @@ function RemoveCACertificate() {
 		DialogUpdate "progresstext: Please remove the CA Certificate profile."
 		open "x-apple.systempreferences:com.apple.Profiles-Settings.extension"
 		sleep 3
-		#Remove any line from the SwiftCommandFile that starts with image: https
-		sed -i '' '/^image: https /d' "$SwiftCommandFile"
 		# Wait up to 5 minutes for CA Certificate to be removed
 		DialogUpdate "image: https://github.com/uvaitsei/JamfImages/blob/main/SCREENSHOTS/Enrollment/Remove%20CA%20Certificate.jpg?raw=true"
 		for ((i=0; i<100; i++)); do
@@ -368,8 +366,6 @@ function InstallCACertandMDMProfile() {
 		osascript -e 'tell application "Safari" to activate'
 		#Wait for CACertificate to be installed
 		CACertMobileConfig="/Users/$CurrentUser/Downloads/CA Certificate.mobileconfig"
-		#Remove any line from the SwiftCommandFile that starts with image: https
-		sed -i '' '/^image: https /d' "$SwiftCommandFile"
 		# Wait for CA Certificate.mobileconfig to exist in Downloads
 		DialogUpdate "image: https://github.com/uvaitsei/JamfImages/blob/main/SCREENSHOTS/Enrollment/Install%20CA%20Cert%20Download.jpg?raw=true"
 		for ((i=0; i<40; i++)); do
