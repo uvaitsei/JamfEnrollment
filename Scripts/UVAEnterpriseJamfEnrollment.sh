@@ -323,9 +323,9 @@ function RemoveJamfFramework() {
 
 function RemoveCACertificate() {
 
+	#CA Certificate Remove Windoow
 	DialogUpdate "quit:"
 	DialogBinary="/usr/local/bin/dialog"  
-	
 	$DialogBinary \
 	--title "UVA Jamf Manual Enrollment" \
 	--messagefont "size=16" \
@@ -374,9 +374,9 @@ function InstallCACertandMDMProfile() {
 		CurrentUser=$( scutil <<< "show State:/Users/ConsoleUser" | awk '/Name :/ { print $3 }' )
 	fi
 
+	#CA Certificate Download Window
 	DialogUpdate "quit:"
 	DialogBinary="/usr/local/bin/dialog"  
-	
 	$DialogBinary \
 	--title "UVA Jamf Manual Enrollment" \
 	--messagefont "size=16" \
@@ -412,7 +412,7 @@ function InstallCACertandMDMProfile() {
 		for ((i=0; i<40; i++)); do
 			if [[ -f "$CACertMobileConfig" ]]; then
 				UpdateScriptLog "CA Certificate: CA Certificate.mobileconfig has been downloaded."
-				DialogUpdate "progresstext: Waiting for CA Certificate has been downloaded."
+				DialogUpdate "progresstext: CA Certificate has been downloaded."
 				break
 			fi
 			if (( i % 4 == 0 )); then
@@ -422,9 +422,9 @@ function InstallCACertandMDMProfile() {
 			sleep 3
 		done
 
+		#CA Certificate Install Windoww
 		DialogUpdate "quit:"
 		DialogBinary="/usr/local/bin/dialog"  
-	
 		$DialogBinary \
 		--title "UVA Jamf Manual Enrollment" \
 		--messagefont "size=16" \
@@ -469,9 +469,9 @@ function InstallCACertandMDMProfile() {
 			sleep 3
 		fi
 		
+		#MDM Profile Download Window
 		DialogUpdate "quit:"
 		DialogBinary="/usr/local/bin/dialog"  
-	
 		$DialogBinary \
 		--title "UVA Jamf Manual Enrollment" \
 		--messagefont "size=16" \
@@ -482,7 +482,7 @@ function InstallCACertandMDMProfile() {
 		--commandfile "$SwiftCommandFile" \
 		--titlefont "shadow=true, size=20" \
 		--progress "100" \
-		--progresstext "Installing MDM Profile" \
+		--progresstext "Download MDM Profile by clicking Continue in the browser window." \
 		--height "500" \
 		--width "500" \
 		--position "bottomright" \
@@ -497,7 +497,7 @@ function InstallCACertandMDMProfile() {
 		for ((i=0; i<40; i++)); do
 			if [[ -f "$MDMProfileMobileConfig" ]]; then
 				UpdateScriptLog "MDM Profile: enrollmentProfile.mobileconfig has been downloaded."
-				DialogUpdate "progresstext: Waiting for MDM Profile to be downloaded."
+				DialogUpdate "progresstext: MDM Profile has been downloaded."
 				break
 			fi
 			if (( i % 4 == 0 )); then
@@ -507,9 +507,9 @@ function InstallCACertandMDMProfile() {
 			sleep 3
 		done
 
-				DialogUpdate "quit:"
+		#MDM Profile Install Window
+		DialogUpdate "quit:"
 		DialogBinary="/usr/local/bin/dialog"  
-	
 		$DialogBinary \
 		--title "UVA Jamf Manual Enrollment" \
 		--messagefont "size=16" \
@@ -547,8 +547,8 @@ function InstallCACertandMDMProfile() {
 
 		if [[ "$MDMProfile" == "True" ]]; then
 			UpdateScriptLog "MDM PROFILE: MDM profile successfully installed."
-			DialogUpdate "progresstext: MDM profile successfully installed."
-
+			DialogUpdate "quit:"
+			DialogBinary="/usr/local/bin/dialog"  
 			$DialogBinary \
 			--title "UVA Jamf Manual Enrollment" \
 			--messagefont "size=16" \
