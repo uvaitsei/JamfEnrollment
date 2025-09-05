@@ -97,6 +97,13 @@ function DialogUpdate() {
     echo "$1" >> "$SwiftCommandFile"
 }
 
+function ReplaceDialogImage() {
+	#Replace the URL for the image: string in the SwifDialog Command File
+	sed -i '' "s|^image: .*|image: $1|" "$SwiftCommandFile"
+	UpdateScriptLog "SWIFT DIALOG IMAGE REPLACED: $1"
+	
+}
+
 function CreateSwiftDialogCommandFile() {
     SwiftCommandDirectory="/var/tmp/SwiftCommand"
     if [ -d "$SwiftCommandDirectory" ]; then
@@ -264,6 +271,7 @@ function JamfEnrollmentManual() {
 	--message "Please follow the guided instructions" \
 	--messagefont "size=16" \
 	--icon "none" \
+	--image "https://github.com/uvaitsei/JamfImages/blob/main/ICONS/COMMON-UVA-USER-ICON.png?raw=true" \
 	--infotext "$ScriptName Version : $ScriptVersion" \
 	--button1disabled "true" \
 	--commandfile "$SwiftCommandFile" \
@@ -321,6 +329,7 @@ function RemoveJamfFramework() {
 
 function RemoveCACertificate() {
 	# Detect if CA Certificate exists by name
+	ReplaceDialogImage "https://github.com/uvaitsei/JamfImages/blob/main/SCREENSHOTS/Enrollment/Remove%20CA%20Certificate.jpg?raw=true"
 	if /usr/bin/profiles show -all | grep "name: CA Certificate" &> /dev/null; then
 		UpdateScriptLog "CA Certificate: Detected existing CA Certificate profile."
 		DialogUpdate "progresstext: Please remove the CA Certificate profile."
