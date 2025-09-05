@@ -10,7 +10,7 @@
 #Email         	:mam5hs@virginia.edu
 #Organization	:UVA-ITS
 #Last Updated	:
-#Version		:1.9
+#Version		:2.0
 
 ###########################################################################
 # Script Change History
@@ -70,7 +70,7 @@ VerboseMode="True"
 ScriptName="UVA Enterprise Jamf - Enrollment"
 Title="UVA Enterprise Jamf - Enrollment"
 Summary="Summary"
-ScriptVersion="1.9"
+ScriptVersion="2.0"
 ScriptLogPath="/var/log/UVA-JAMF/"
 ScriptLogFile="UVA-Jamf-$ScriptName.log"
 ScriptLog="$ScriptLogPath$ScriptLogFile"
@@ -324,7 +324,6 @@ function RemoveJamfFramework() {
 function RemoveCACertificate() {
 
 	#CA Certificate Remove Windoow
-	DialogUpdate "quit:"
 	DialogBinary="/usr/local/bin/dialog"  
 	$DialogBinary \
 	--title "UVA Jamf Manual Enrollment" \
@@ -375,7 +374,6 @@ function InstallCACertandMDMProfile() {
 	fi
 
 	#CA Certificate Download Window
-	DialogUpdate "quit:"
 	DialogBinary="/usr/local/bin/dialog"  
 	$DialogBinary \
 	--title "UVA Jamf Manual Enrollment" \
@@ -423,7 +421,6 @@ function InstallCACertandMDMProfile() {
 		done
 
 		#CA Certificate Install Windoww
-		DialogUpdate "quit:"
 		DialogBinary="/usr/local/bin/dialog"  
 		$DialogBinary \
 		--title "UVA Jamf Manual Enrollment" \
@@ -470,7 +467,6 @@ function InstallCACertandMDMProfile() {
 		fi
 		
 		#MDM Profile Download Window
-		DialogUpdate "quit:"
 		DialogBinary="/usr/local/bin/dialog"  
 		$DialogBinary \
 		--title "UVA Jamf Manual Enrollment" \
@@ -508,7 +504,6 @@ function InstallCACertandMDMProfile() {
 		done
 
 		#MDM Profile Install Window
-		DialogUpdate "quit:"
 		DialogBinary="/usr/local/bin/dialog"  
 		$DialogBinary \
 		--title "UVA Jamf Manual Enrollment" \
@@ -547,7 +542,6 @@ function InstallCACertandMDMProfile() {
 
 		if [[ "$MDMProfile" == "True" ]]; then
 			UpdateScriptLog "MDM PROFILE: MDM profile successfully installed."
-			DialogUpdate "quit:"
 			DialogBinary="/usr/local/bin/dialog"  
 			$DialogBinary \
 			--title "UVA Jamf Manual Enrollment" \
