@@ -1113,6 +1113,29 @@ function CleanUp() {
 
 }
 
+function PreCleanUpCleanUp() {
+
+	#Add Any Cleanup Items Here.
+	#Close Safari if it is open
+	osascript -e 'quit app "Safari"'
+	#Close System Settings if it is open
+	osascript -e 'quit app "System Settings"'
+	UpdateScriptLog "CLEANUP: Removing Temporary Files"
+	#Delete MDMProfileMobileConfig
+	if [[ -f "$MDMProfileMobileConfig" ]]; then
+		/bin/rm -f "$MDMProfileMobileConfig"
+		UpdateScriptLog "CLEANUP: Deleted $MDMProfileMobileConfig"
+	fi	
+	#Delete CACertMobileConfig
+	if [[ -f "$CACertMobileConfig" ]]; then
+		/bin/rm -f "$CACertMobileConfig"
+		UpdateScriptLog "CLEANUP: Deleted $CACertMobileConfig"
+	fi
+	#Close Swift Dialog
+	DialogUpdate "quit:"
+
+}
+
 function UpdateJamfInventory() {
 	#Update Jamf Inventory
 	UpdateScriptLog "UPDATE JAMF INVENTORY: Starting"
@@ -1132,7 +1155,7 @@ KillProcess "dialog"
 
 #kill any previous Caffeinate process
 KillProcess "caffeinate"
-CleanUp
+PreCleanUp
 CreateLogFile
 UpdateScriptLog "SCRIPT HEADER: $Title - $ScriptName - Version: $ScriptVersion : Start"
 CreateSwiftDialogCommandFile
