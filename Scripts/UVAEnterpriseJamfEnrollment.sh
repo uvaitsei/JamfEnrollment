@@ -343,11 +343,11 @@ function RemoveCACertificate() {
 			if (( i % 10 == 0 )); then
 				UpdateScriptLog "CA Certificate: Waiting for user to remove CA Certificate profile."
 				DialogUpdate "progresstext: Please remove the CA Certificate profile by clicking the minus button"
-				RemoveImagesFromSwiftCommandFile
 				DialogUpdate "image: https://github.com/uvaitsei/JamfImages/blob/main/SCREENSHOTS/Enrollment/Remove%20CA%20Certificate.jpg?raw=true"
 			fi
 			sleep 3
 		done
+		RemoveImagesFromSwiftCommandFile
 	else
 		UpdateScriptLog "CA Certificate: No CA Certificate profile found to remove."
 		DialogUpdate "progresstext: No CA Certificate profile found to remove."
@@ -386,12 +386,11 @@ function InstallCACertandMDMProfile() {
 			if (( i % 4 == 0 )); then
 				UpdateScriptLog "CA Certificate: Waiting for CA Certificate.mobileconfig to be Downloaded."
 				DialogUpdate "progresstext: Download CA Certificate by clicking Continue in the browser window."]
-				RemoveImagesFromSwiftCommandFile
 				DialogUpdate "image: https://github.com/uvaitsei/JamfImages/blob/main/SCREENSHOTS/Enrollment/Install%20CA%20Cert%20Download.jpg?raw=true"
 			fi
 			sleep 3
 		done
-
+		RemoveImagesFromSwiftCommandFile
 		#Open system settings to device management
 		DialogUpdate "progresstext: Please use System Settings to install the CA Certificate"
 		open "x-apple.systempreferences:com.apple.Profiles-Settings.extension"
@@ -411,7 +410,7 @@ function InstallCACertandMDMProfile() {
 			fi
 			sleep 3
 		done
-
+		RemoveImagesFromSwiftCommandFile
 		if [[ "$CAACertificate" == "True" ]]; then
 			UpdateScriptLog "CA Certificate: successfully installed."
 			DialogUpdate "progresstext: CA Certificate successfully installed."
