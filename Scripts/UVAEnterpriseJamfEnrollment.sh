@@ -109,7 +109,7 @@ function CreateSwiftDialogCommandFile() {
         mkdir $SwiftCommandDirectory
     fi
 
-    SwiftCommandFile=$( mktemp $SwiftCommandDirectory/swiftcommand.XXX )
+    SwiftCommandFile=$( mktemp $SwiftCommandDirectory/swiftcommand-$1.XXX )
     UpdateScriptLog "Swift Command File: $SwiftCommandFile"
 
     # Set permissions for all users
@@ -138,7 +138,7 @@ function JamfEnrollmentStatus() {
 	DialogVersion=$( /usr/local/bin/dialog --version )
 	UpdateScriptLog "SWIFT DIALOG DISPLAY: Swift Dialog Version: $DialogVersion"
 
-	CreateSwiftDialogCommandFile
+	CreateSwiftDialogCommandFile "JamfEnrollmentStatus"
 	DialogBinary="/usr/local/bin/dialog"
 	$DialogBinary \
 	--title "$Title" \
@@ -298,13 +298,15 @@ function JamfEnrollmentManual() {
 	--position "bottomright" \
 	--activate "true" \
 	&
+
+	sleep 3
+	DialogUpdate "quit:"	
+	DeleteSwiftDialogCommandFile
 	
 	if [[ "$JamfEnrolled" == "True" ]]; then
 		DialogUpdate "progresstext: Removing Jamf Framework"
 		RemoveJamfFramework
 		DialogUpdate "progresstext: Removing CA Certificate"
-		DialogUpdate "quit:"
-		DeleteSwiftDialogCommandFile
 		RemoveCACertificate
 		DialogUpdate "progresstext: Installing CA Certificate and MDM Profile"
 		InstallCACertandMDMProfile
@@ -320,7 +322,27 @@ function JamfEnrollmentManual() {
 
 function RemoveJamfFramework() {
 	DialogUpdate "progresstext: Removing Jamf Framework"
-	sleep 3
+
+	CreateSwiftDialogCommandFile
+	DialogBinary="/usr/local/bin/dialog"
+	$DialogBinary \
+	--title "Manual Enrollment" \
+	--messagefont "size=16" \
+	--icon "none" \
+	--image "https://github.com/uvaitsei/JamfImages/blob/main/ICONS/COMMON-UVA-USER-ICON.png?raw=true" \
+	--infotext "$ScriptName Version : $ScriptVersion" \
+	--button1disabled "true" \
+	--commandfile "$SwiftCommandFile" \
+	--titlefont "shadow=true, size=20" \
+	--progress "100" \
+	--progresstext "Removing Jamf Framework" \
+	--height "500" \
+	--width "500" \
+	--position "bottomright" \
+	--activate "true" \
+	&
+
+
 	# Remove Jamf Framework
 	if /usr/local/bin/jamf removeFramework &> /dev/null; then
 		UpdateScriptLog "JAMF REMOVAL: Jamf Framework Removed"
@@ -342,6 +364,21 @@ function RemoveJamfFramework() {
 			fi
 			sleep 15
 		done
+
+		#Check if MDM Profile is removed
+		if [[ "$MDMProfile" == "False" ]]; then
+			UpdateScriptLog "MDM profile successfully removed."
+			DialogUpdate "progresstext: MDM profile successfully removed."
+			sleep 3
+			DialogUpdate "quit:"
+			DeleteSwiftDialogCommandFile
+		else
+			UpdateScriptLog "MDM PROFILE: MDM profile could not be found after 10 minutes."
+			DialogUpdate "progresstext: MDM profile could not be found after 10 minutes."
+			JamfMDMProfileUnremoveable
+			sleep 3
+		fi
+
 	fi
 }
 
@@ -1180,6 +1217,7 @@ function CleanUp() {
 	fi
 	#Close Swift Dialog
 	DialogUpdate "quit:"
+	DeleteSwiftDialogCommandFile
 	exit 0
 
 }
@@ -1210,7 +1248,6 @@ function PreCleanUp() {
 	fi
 	#Close Swift Dialog
 	DialogUpdate "quit:"
-
 }
 
 function UpdateJamfInventory() {
