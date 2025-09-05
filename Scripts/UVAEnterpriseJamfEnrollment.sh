@@ -331,30 +331,29 @@ function RemoveJamfFramework() {
 }
 
 function RemoveCACertificate() {
-	#Close previous dialog windows
-	DialogUpdate "quit:"
-	sleep 3
-	#CA Certificate Remove Window
-	DialogBinary="/usr/local/bin/dialog"  
-	$DialogBinary \
-	--title "UVA Jamf Manual Enrollment" \
-	--messagefont "size=16" \
-	--icon "none" \
-	--image "https://github.com/uvaitsei/JamfImages/blob/main/SCREENSHOTS/Enrollment/Remove%20CA%20Certificate.jpg?raw=true" \
-	--infotext "$ScriptName Version : $ScriptVersion" \
-	--button1disabled "true" \
-	--commandfile "$SwiftCommandFile" \
-	--titlefont "shadow=true, size=20" \
-	--progress "100" \
-	--progresstext "Please remove the CA Certificate profile by clicking the minus button" \
-	--height "500" \
-	--width "500" \
-	--position "bottomright" \
-	--activate "true" \
-	&
+
 
 	# Detect if CA Certificate exists by name
 	if /usr/bin/profiles show -all | grep "name: CA Certificate" &> /dev/null; then
+
+		#CA Certificate Remove Window
+		DialogBinary="/usr/local/bin/dialog"  
+		$DialogBinary \
+		--title "UVA Jamf Manual Enrollment" \
+		--messagefont "size=16" \
+		--icon "none" \
+		--image "https://github.com/uvaitsei/JamfImages/blob/main/SCREENSHOTS/Enrollment/Remove%20CA%20Certificate.jpg?raw=true" \
+		--infotext "$ScriptName Version : $ScriptVersion" \
+		--button1disabled "true" \
+		--commandfile "$SwiftCommandFile" \
+		--titlefont "shadow=true, size=20" \
+		--progress "100" \
+		--progresstext "Please remove the CA Certificate profile by clicking the minus button" \
+		--height "500" \
+		--width "500" \
+		--position "bottomright" \
+		--activate "true" \
+		&
 		UpdateScriptLog "CA Certificate: Detected existing CA Certificate profile."
 		DialogUpdate "progresstext: Please remove the CA Certificate profile."
 		open "x-apple.systempreferences:com.apple.Profiles-Settings.extension"
@@ -376,6 +375,10 @@ function RemoveCACertificate() {
 		DialogUpdate "progresstext: No CA Certificate profile found to remove."
 		sleep 3
 	fi
+
+	#Close previous dialog windows
+	DialogUpdate "quit:"
+
 }
 
 function InstallCACertandMDMProfile() {
@@ -384,9 +387,6 @@ function InstallCACertandMDMProfile() {
 		CurrentUser=$( scutil <<< "show State:/Users/ConsoleUser" | awk '/Name :/ { print $3 }' )
 	fi
 
-	#Close previous dialog windows
-	DialogUpdate "quit:"
-	sleep 3
 	#CA Certificate Download Window
 	DialogBinary="/usr/local/bin/dialog"  
 	$DialogBinary \
@@ -414,7 +414,7 @@ function InstallCACertandMDMProfile() {
 		osascript -e 'quit app "Google Chrome"'
 		osascript -e 'quit app "Firefox"'
 		#open invitation link
-		open "https://itsemp.jamfcloud.com/enroll?invitation=$SiteEnrollmentInvitationEncoded"
+		open "https://itsemp.jamfcloud.com/enroll?invitation=$SiteEnrollmentInvitation"
 		sleep 3
 	
 		#Make safari the front most app
@@ -444,6 +444,7 @@ function InstallCACertandMDMProfile() {
 		#Close previous dialog windows
 		DialogUpdate "quit:"
 		sleep 3
+
 		#CA Certificate Install Window
 		DialogBinary="/usr/local/bin/dialog"  
 		$DialogBinary \
@@ -494,6 +495,7 @@ function InstallCACertandMDMProfile() {
 		#Close previous dialog windows
 		DialogUpdate "quit:"
 		sleep 3
+
 		#MDM Profile Download Window
 		DialogBinary="/usr/local/bin/dialog"  
 		$DialogBinary \
@@ -534,6 +536,7 @@ function InstallCACertandMDMProfile() {
 		#Close previous dialog windows
 		DialogUpdate "quit:"
 		sleep 3
+
 		#MDM Profile Install Window
 		DialogBinary="/usr/local/bin/dialog"  
 		$DialogBinary \
