@@ -303,6 +303,8 @@ function JamfEnrollmentManual() {
 		DialogUpdate "progresstext: Removing Jamf Framework"
 		RemoveJamfFramework
 		DialogUpdate "progresstext: Removing CA Certificate"
+		DialogUpdate "quit:"
+		DeleteSwiftDialogCommandFile
 		RemoveCACertificate
 		DialogUpdate "progresstext: Installing CA Certificate and MDM Profile"
 		InstallCACertandMDMProfile
@@ -313,8 +315,6 @@ function JamfEnrollmentManual() {
 		InstallCACertandMDMProfile
 	fi
 
-	DialogUpdate "quit:"
-	DeleteSwiftDialogCommandFile
 
 }
 
@@ -389,6 +389,8 @@ function RemoveCACertificate() {
 			fi
 			sleep 3
 		done
+		DialogUpdate "quit:"
+		DeleteSwiftDialogCommandFile
 	else
 		UpdateScriptLog "CA Certificate: No CA Certificate profile found to remove."
 		DialogUpdate "progresstext: No CA Certificate profile found to remove."
