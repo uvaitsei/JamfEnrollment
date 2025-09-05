@@ -1112,7 +1112,7 @@ function CleanUp() {
 
 }
 
-function PreCleanUpCleanUp() {
+function PreCleanUp() {
 
 	#Add Any Cleanup Items Here.
 	#Close Safari if it is open
