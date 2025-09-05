@@ -405,7 +405,6 @@ function InstallCACertandMDMProfile() {
 			if (( i % 4 == 0 )); then
 				UpdateScriptLog "CA Certificate: Waiting for up to 10 minutes for CA Certificate to install."
 				DialogUpdate "progresstext: Please install the CA Certificate by double-clicking it in the Device Management Window."
-				RemoveImagesFromSwiftCommandFile
 				DialogUpdate "image: https://github.com/uvaitsei/JamfImages/blob/main/SCREENSHOTS/Enrollment/Install%20CA%20Cert%20Device%20Management%20Window%201.jpg?raw=true"
 			fi
 			sleep 3
