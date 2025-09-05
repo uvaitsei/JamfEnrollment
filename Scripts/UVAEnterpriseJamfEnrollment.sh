@@ -336,7 +336,7 @@ function RemoveCACertificate() {
 	--commandfile "$SwiftCommandFile" \
 	--titlefont "shadow=true, size=20" \
 	--progress "100" \
-	--progresstext "Starting Manual Enrollment" \
+	--progresstext "Please remove the CA Certificate profile by clicking the minus button" \
 	--height "500" \
 	--width "500" \
 	--position "bottomright" \
@@ -387,7 +387,7 @@ function InstallCACertandMDMProfile() {
 	--commandfile "$SwiftCommandFile" \
 	--titlefont "shadow=true, size=20" \
 	--progress "100" \
-	--progresstext "Removing CA Certificate" \
+	--progresstext "Download CA Certificate by clicking Continue in the browser window." \
 	--height "500" \
 	--width "500" \
 	--position "bottomright" \
@@ -435,7 +435,7 @@ function InstallCACertandMDMProfile() {
 		--commandfile "$SwiftCommandFile" \
 		--titlefont "shadow=true, size=20" \
 		--progress "100" \
-		--progresstext "Installing CA Certificate" \
+		--progresstext "Please install the CA Certificate by double-clicking it in the Device Management Window." \
 		--height "500" \
 		--width "500" \
 		--position "bottomright" \
@@ -520,7 +520,7 @@ function InstallCACertandMDMProfile() {
 		--commandfile "$SwiftCommandFile" \
 		--titlefont "shadow=true, size=20" \
 		--progress "100" \
-		--progresstext "Installing MDM Profile" \
+		--progresstext "Please install the MDM Profile by double-clicking it in the Device Management Window." \
 		--height "500" \
 		--width "500" \
 		--position "bottomright" \
