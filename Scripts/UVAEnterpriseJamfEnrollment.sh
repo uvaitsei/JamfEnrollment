@@ -97,7 +97,7 @@ function DialogUpdate() {
 
 function RemoveImagesFromSwiftCommandFile() {
 	if [[ -f "$SwiftCommandFile" ]]; then
-		sed -i '' '/^image: /d' "$SwiftCommandFile"
+		sed -i '' '/^image: https /d' "$SwiftCommandFile"
 		UpdateScriptLog "SWIFT DIALOG UPDATE: Removed images from Swift Command File"
 	else
 		UpdateScriptLog "SWIFT DIALOG UPDATE: Swift Command File does not exist, cannot remove images"
