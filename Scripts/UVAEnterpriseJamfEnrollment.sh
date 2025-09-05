@@ -987,10 +987,10 @@ function JamfManualEnrollmentDisplay() {
 	DialogVersion=$( /usr/local/bin/dialog --version )
 	UpdateScriptLog "SWIFT DIALOG DISPLAY: Swift Dialog Version: $DialogVersion"
 
-	EnrollmentInfo="Follow the prompted instructions to complete the manual enrollment process. n/ \
-	This computer will be enrolled in: n/ \
-	Organization: $SiteDisplayName n/ \
-	Site Name: $SiteName n/ \
+	EnrollmentInfo="Follow the prompted instructions to complete the manual enrollment process.\
+	This computer will be enrolled in \
+	Organization: $SiteDisplayName \
+	Site Name: $SiteName \
 	Using this Enrollment Invitation: $SiteEnrollmentInvitation"
 
 	DialogBinary="/usr/local/bin/dialog"  
@@ -1039,7 +1039,7 @@ function AutomatedEnrollment() {
 	DialogVersion=$( /usr/local/bin/dialog --version )
 	UpdateScriptLog "SWIFT DIALOG DISPLAY: Swift Dialog Version: $DialogVersion"
 	
-	EnrollmentInfo="### UVA Enterprise Jamf Automated Enrollment Instructions\
+	EnrollmentInfo="### UVA Enterprise Jamf Automated Enrollment Instructions \
 	Platorm Name: $PlatformName \
 	Service Name: $serviceName"
 
@@ -1106,6 +1106,7 @@ function CleanUp() {
 	fi
 	#Close Swift Dialog
 	DialogUpdate "quit:"
+	exit 0
 
 }
 
