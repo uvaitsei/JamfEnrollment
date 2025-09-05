@@ -338,7 +338,6 @@ function RemoveCACertificate() {
 			fi
 			sleep 3
 		done
-		sed -i '' '/^image: https /d' "$SwiftCommandFile"
 	else
 		UpdateScriptLog "CA Certificate: No CA Certificate profile found to remove."
 		DialogUpdate "progresstext: No CA Certificate profile found to remove."
@@ -381,7 +380,6 @@ function InstallCACertandMDMProfile() {
 			fi
 			sleep 3
 		done
-		sed -i '' '/^image: https /d' "$SwiftCommandFile"
 		#Open system settings to device management
 		DialogUpdate "progresstext: Please use System Settings to install the CA Certificate"
 		open "x-apple.systempreferences:com.apple.Profiles-Settings.extension"
@@ -400,7 +398,6 @@ function InstallCACertandMDMProfile() {
 			fi
 			sleep 3
 		done
-		sed -i '' '/^image: https /d' "$SwiftCommandFile"
 		if [[ "$CAACertificate" == "True" ]]; then
 			UpdateScriptLog "CA Certificate: successfully installed."
 			DialogUpdate "progresstext: CA Certificate successfully installed."
@@ -428,7 +425,6 @@ function InstallCACertandMDMProfile() {
 			fi
 			sleep 3
 		done
-		sed -i '' '/^image: https /d' "$SwiftCommandFile"
 		#Open system settings to device management
 		DialogUpdate "progresstext: Please use system settings to complete MDM Profile Install"
 		open "x-apple.systempreferences:com.apple.Profiles-Settings.extension"
