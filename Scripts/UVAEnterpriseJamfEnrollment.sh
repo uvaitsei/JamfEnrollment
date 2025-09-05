@@ -261,8 +261,10 @@ function JamfEnrollmentManual() {
 	DialogBinary="/usr/local/bin/dialog"  
 	
 	$DialogBinary \
-	--title "UVA Jamf Manual Enrollment" \
-	--message "Please follow the guided instructions" \
+	--title "$SiteDisplayName" \
+	--message "This Computer will be Enrolled to /n \
+	Site: $SiteName /n \
+	Using this Enrollment Invitation: $SiteEnrollmentInvitation" \
 	--messagefont "size=16" \
 	--icon "none" \
 	--image "https://github.com/uvaitsei/JamfImages/blob/main/ICONS/COMMON-UVA-USER-ICON.png?raw=true" \
