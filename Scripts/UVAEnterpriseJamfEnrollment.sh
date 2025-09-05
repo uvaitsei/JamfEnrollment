@@ -439,11 +439,12 @@ function InstallCACertandMDMProfile() {
 			DialogUpdate "progresstext: CA Certificate.mobileconfig was not downloaded after 5 minutes."
 			CleanUp
 			sleep 3
+		else
+			UpdateScriptLog "CA Certificate: CA Certificate.mobileconfig has been downloaded."
+			DialogUpdate "progresstext: CA Certificate has been downloaded."
+			sleep 3
+			DialogUpdate "quit:"
 		fi
-
-		#Close previous dialog windows
-		DialogUpdate "quit:"
-		sleep 3
 
 		#CA Certificate Install Window
 		DialogBinary="/usr/local/bin/dialog"  
@@ -529,12 +530,20 @@ function InstallCACertandMDMProfile() {
 				UpdateScriptLog "MDM Profile: Waiting for enrollmentProfile.mobileconfig to be Downloaded."
 				DialogUpdate "progresstext: Download MDM Profile by clicking Continue in the browser window."
 			fi
-			sleep 3
+			sleep 5
 		done
-
-		#Close previous dialog windows
-		DialogUpdate "quit:"
-		sleep 3
+		# Double-check file existence after loop
+		if [[ ! -f "$MDMProfileMobileConfig" ]]; then
+			UpdateScriptLog "MDM Profile: enrollmentProfile.mobileconfig was not downloaded after waiting."
+			DialogUpdate "progresstext: enrollmentProfile.mobileconfig was not downloaded after waiting."
+			CleanUp
+			sleep 3
+		else
+			UpdateScriptLog "MDM Profile: enrollmentProfile.mobileconfig has been downloaded."
+			DialogUpdate "progresstext: MDM Profile has been downloaded."
+			sleep 3
+			DialogUpdate "quit:"
+		fi
 
 		#MDM Profile Install Window
 		DialogBinary="/usr/local/bin/dialog"  
@@ -572,6 +581,19 @@ function InstallCACertandMDMProfile() {
 			fi
 			sleep 3
 		done
+
+		#If MDM Profile is installed then exit
+		if [[ "$MDMProfile" == "False" ]]; then
+			UpdateScriptLog "MDM PROFILE: MDM profile could not be found after 10 minutes."
+			DialogUpdate "progresstext: MDM profile could not be found after 10 minutes."
+			CleanUp
+			sleep 3
+		else
+			UpdateScriptLog "MDM PROFILE: MDM profile successfully installed."
+			DialogUpdate "progresstext: MDM profile successfully installed."
+			sleep 3
+			DialogUpdate "quit:"
+		fi
 
 		if [[ "$MDMProfile" == "True" ]]; then
 			UpdateScriptLog "MDM PROFILE: MDM profile successfully installed."
