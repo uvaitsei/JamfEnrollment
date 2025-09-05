@@ -178,7 +178,7 @@ function JamfEnrollmentStatus() {
 		DialogUpdate "progresstext: Site Information NOT found"
 		SiteEnrollmentInvitation="False"
 	fi
-
+	DialogUpdate "quit:"
 	DeleteSwiftDialogCommandFile
 }
 
@@ -260,7 +260,7 @@ function JamfEnrollmentAutmated() {
 		UpdateScriptLog "MDM PROFILE: MDM profile successfully installed."
 		DialogUpdate "progresstext: MDM profile successfully installed."
 		sleep 30
-		DialogUpdate "quit:"
+		DeleteSwiftDialogCommandFile
 	else
 		UpdateScriptLog "MDM PROFILE: MDM profile could not be found after 5 minutes."
 		DialogUpdate "progresstext: MDM profile could not be found after 5 minutes."
@@ -268,7 +268,6 @@ function JamfEnrollmentAutmated() {
 		CleaanUp
 	fi
 	
-	DeleteSwiftDialogCommandFile
 }
 
 
@@ -314,6 +313,7 @@ function JamfEnrollmentManual() {
 		InstallCACertandMDMProfile
 	fi
 
+	DialogUpdate "quit:"
 	DeleteSwiftDialogCommandFile
 
 }
@@ -464,6 +464,7 @@ function InstallCACertandMDMProfile() {
 			DeleteSwiftDialogCommandFile
 		fi
 
+		CreateSwiftDialogCommandFile
 		#CA Certificate Install Window
 		DialogBinary="/usr/local/bin/dialog"  
 		$DialogBinary \
@@ -514,7 +515,7 @@ function InstallCACertandMDMProfile() {
 		fi
 		
 
-
+		CreateSwiftDialogCommandFile
 		#MDM Profile Download Window
 		DialogBinary="/usr/local/bin/dialog"  
 		$DialogBinary \
@@ -565,7 +566,7 @@ function InstallCACertandMDMProfile() {
 			DeleteSwiftDialogCommandFile
 		fi
 
-
+		CreateSwiftDialogCommandFile
 		#MDM Profile Install Window
 		DialogBinary="/usr/local/bin/dialog"  
 		$DialogBinary \
@@ -614,14 +615,13 @@ function InstallCACertandMDMProfile() {
 			DialogUpdate "progresstext: MDM profile successfully installed."
 			sleep 3
 			DialogUpdate "quit:"
+			DeleteSwiftDialogCommandFile
 		fi
 
 		if [[ "$MDMProfile" == "True" ]]; then
 			UpdateScriptLog "MDM PROFILE: MDM profile successfully installed."
 
-			#Close previous dialog windows
-			DialogUpdate "quit:"
-			sleep 3
+			CreateSwiftDialogCommandFile
 			DialogBinary="/usr/local/bin/dialog"  
 			$DialogBinary \
 			--title "UVA Jamf Manual Enrollment" \
@@ -1233,7 +1233,6 @@ KillProcess "caffeinate"
 PreCleanUp
 CreateLogFile
 UpdateScriptLog "SCRIPT HEADER: $Title - $ScriptName - Version: $ScriptVersion : Start"
-CreateSwiftDialogCommandFile
 EnableCaffeinate
 RootCheck
 WaitForSetupAssistant
