@@ -618,7 +618,7 @@ function JamfMDMProfileUnremoveable() {
 ###########################################################################
 function CheckFilesNeeded() {
 	
-	ASMAPI="/private/var/tmp/UVAASM/uva.asmprod.plist"
+	ASMAPI="/Library/Application Support/UVAJamfEnrollment/uva.asmprod.plist"
 	# Check for the existence of ASM API Config File and delete if it exists
 	# Ensure latest ASM API Config File is present
 	if [ -f "$ASMAPI" ]; then
@@ -640,6 +640,29 @@ function CheckFilesNeeded() {
 		ClientAssertion="Not Found"
 		ClientName="Not Found"
 	fi
+
+	SITEINFO="/Library/Application Support/UVAJamfEnrollment/uva.jamfsite.plist"
+	# Check for the existence of Site Info Config File and delete if it exists
+	# Ensure latest Site Info Config File is present
+	if [ -f "$SITEINFO" ]; then
+		UpdateScriptLog "SITE INFO CONFIG CHECK: $SITEINFO exists"
+	else
+		UpdateScriptLog "SITE INFO CONFIG CHECK: $SITEINFO does not exist"
+		exit 1
+	fi
+	if test -f "$SITEINFO"
+	then
+		UpdateScriptLog "SITE INFO VARIABLES CHECK: $SITEINFO Detected"
+		SiteDisplayName=$(defaults read "$SITEINFO" Display Name 2>/dev/null)
+		SiteName=$(defaults read "$SITEINFO" SiteName 2>/dev/null)
+		SiteEnrollmentInvitation=$(defaults read "$SITEINFO" EnrollmentInvitation 2>/dev/null)
+	else
+		UpdateScriptLog "SITE INFO VARIABLES CHECK: No Site Info Variables Detected Use Default Setting"
+		SiteDisplayName="Not Found"
+		SiteName="Not Found"
+		SiteEnrollmentInvitation="Not Found"
+	fi
+
 
 }
 

@@ -9,9 +9,8 @@
 #Email         	:mam5hs@virginia.edu
 #Organization	:UVA-ITS
 #Last Updated	:
-#Version		:1.6
-
-
+#Version		:2.0
+###########################################################################
 # Logging Variables
 # USER LOG PATH /Users/username/Library/Logs/UVA/ITS-JAMF/
 # SYSTEM LOG PATH /var/log/
@@ -38,16 +37,21 @@ function UpdateScriptLog() {
 
 }
 
-
 UpdateScriptLog "Starting UVA Enterprise Jamf Enrollment Launcher..."
 # URL of the script to download
 SCRIPT_Name="EnrollmentLauncher.sh"
 SCRIPT_URL="https://raw.githubusercontent.com/uvaitsei/JamfEnrollment/refs/heads/main/Scripts/UVAEnterpriseJamfEnrollment.sh"
-ASMAPI="/private/var/tmp/UVAASM/uva.asmprod.plist"
+ASMAPI="/Library/Application Support/UVAJamfEnrollment/uva.asmprod.plist"
+SITEINFO="/Library/Application\ Support/UVAJamfEnrollment/uva.jamfsite.plist"
 
 # Confirm ASMAPI exists
 if [ ! -f "$ASMAPI" ]; then
     UpdateScriptLog "Error: $ASMAPI not found."
+    exit 1
+fi
+# Confirm SITEINFO exists
+if [ ! -f "$SITEINFO" ]; then
+    UpdateScriptLog "Error: $SITEINFO not found."
     exit 1
 fi
 
