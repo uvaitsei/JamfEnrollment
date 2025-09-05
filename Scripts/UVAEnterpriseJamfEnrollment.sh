@@ -485,6 +485,7 @@ function InstallCACertandMDMProfile() {
 			UpdateScriptLog "CA Certificate: successfully installed."
 			DialogUpdate "progresstext: CA Certificate successfully installed."
 			sleep 3
+			DialogUpdate "quit:"
 		else
 			UpdateScriptLog "CA Certificate: could not be found after 5 minutes."
 			DialogUpdate "progresstext: CA Certificate could not be found after 5 minutes."
@@ -492,9 +493,7 @@ function InstallCACertandMDMProfile() {
 			sleep 3
 		fi
 		
-		#Close previous dialog windows
-		DialogUpdate "quit:"
-		sleep 3
+
 
 		#MDM Profile Download Window
 		DialogBinary="/usr/local/bin/dialog"  
