@@ -667,6 +667,9 @@ function CheckFilesNeeded() {
 		SiteDisplayName=$(defaults read "$SITEINFO" Display Name 2>/dev/null)
 		SiteName=$(defaults read "$SITEINFO" SiteName 2>/dev/null)
 		SiteEnrollmentInvitation=$(defaults read "$SITEINFO" EnrollmentInvitation 2>/dev/null)
+		UpdateScriptLog "SITE INFO VARIABLES CHECK: Site Display Name: $SiteDisplayName"
+		UpdateScriptLog "SITE INFO VARIABLES CHECK: Site Name: $SiteName"
+		UpdateScriptLog "SITE INFO VARIABLES CHECK: Site Enrollment Invitation: $SiteEnrollmentInvitation"
 	else
 		UpdateScriptLog "SITE INFO VARIABLES CHECK: No Site Info Variables Detected Use Default Setting"
 		SiteDisplayName="Not Found"
