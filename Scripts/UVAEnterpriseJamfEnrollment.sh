@@ -1010,7 +1010,7 @@ KillProcess "dialog"
 
 #kill any previous Caffeinate process
 KillProcess "caffeinate"
-
+CleanUp
 CreateLogFile
 UpdateScriptLog "SCRIPT HEADER: $Title - $ScriptName - Version: $ScriptVersion : Start"
 CreateSwiftDialogCommandFile
