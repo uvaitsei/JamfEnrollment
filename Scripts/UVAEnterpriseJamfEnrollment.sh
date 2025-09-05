@@ -95,6 +95,15 @@ function DialogUpdate() {
     echo "$1" >> "$SwiftCommandFile"
 }
 
+function RemoveImagesFromSwiftCommandFile() {
+	if [[ -f "$SwiftCommandFile" ]]; then
+		sed -i '' '/^image: /d' "$SwiftCommandFile"
+		UpdateScriptLog "SWIFT DIALOG UPDATE: Removed images from Swift Command File"
+	else
+		UpdateScriptLog "SWIFT DIALOG UPDATE: Swift Command File does not exist, cannot remove images"
+	fi
+}
+
 function CreateSwiftDialogCommandFile() {
     SwiftCommandDirectory="/var/tmp/SwiftCommand"
     if [ -d "$SwiftCommandDirectory" ]; then
@@ -334,6 +343,7 @@ function RemoveCACertificate() {
 			if (( i % 10 == 0 )); then
 				UpdateScriptLog "CA Certificate: Waiting for user to remove CA Certificate profile."
 				DialogUpdate "progresstext: Please remove the CA Certificate profile by clicking the minus button"
+				RemoveImagesFromSwiftCommandFile
 				DialogUpdate "image: https://github.com/uvaitsei/JamfImages/blob/main/SCREENSHOTS/Enrollment/Remove%20CA%20Certificate.jpg?raw=true"
 			fi
 			sleep 3
@@ -376,6 +386,7 @@ function InstallCACertandMDMProfile() {
 			if (( i % 4 == 0 )); then
 				UpdateScriptLog "CA Certificate: Waiting for CA Certificate.mobileconfig to be Downloaded."
 				DialogUpdate "progresstext: Download CA Certificate by clicking Continue in the browser window."]
+				RemoveImagesFromSwiftCommandFile
 				DialogUpdate "image: https://github.com/uvaitsei/JamfImages/blob/main/SCREENSHOTS/Enrollment/Install%20CA%20Cert%20Download.jpg?raw=true"
 			fi
 			sleep 3
@@ -395,6 +406,7 @@ function InstallCACertandMDMProfile() {
 			if (( i % 4 == 0 )); then
 				UpdateScriptLog "CA Certificate: Waiting for up to 10 minutes for CA Certificate to install."
 				DialogUpdate "progresstext: Please install the CA Certificate by double-clicking it in the Device Management Window."
+				RemoveImagesFromSwiftCommandFile
 				DialogUpdate "image: https://github.com/uvaitsei/JamfImages/blob/main/SCREENSHOTS/Enrollment/Install%20CA%20Cert%20Device%20Management%20Window%201.jpg?raw=true"
 			fi
 			sleep 3
