@@ -387,7 +387,7 @@ function InstallCACertandMDMProfile() {
 	--commandfile "$SwiftCommandFile" \
 	--titlefont "shadow=true, size=20" \
 	--progress "100" \
-	--progresstext "Starting Manual Enrollment" \
+	--progresstext "Removing CA Certificate" \
 	--height "500" \
 	--width "500" \
 	--position "bottomright" \
@@ -435,6 +435,7 @@ function InstallCACertandMDMProfile() {
 		--commandfile "$SwiftCommandFile" \
 		--titlefont "shadow=true, size=20" \
 		--progress "100" \
+		--progresstext "Installing CA Certificate" \
 		--height "500" \
 		--width "500" \
 		--position "bottomright" \
@@ -467,6 +468,26 @@ function InstallCACertandMDMProfile() {
 			DialogUpdate "progresstext: CA Certificate could not be found after 5 minutes."
 			sleep 3
 		fi
+		
+		DialogUpdate "quit:"
+		DialogBinary="/usr/local/bin/dialog"  
+	
+		$DialogBinary \
+		--title "UVA Jamf Manual Enrollment" \
+		--messagefont "size=16" \
+		--icon "none" \
+		--image "https://github.com/uvaitsei/JamfImages/blob/main/SCREENSHOTS/Enrollment/Install%20MDM%20Profile%20Download.jpg?raw=true" \
+		--infotext "$ScriptName Version : $ScriptVersion" \
+		--button1disabled "true" \
+		--commandfile "$SwiftCommandFile" \
+		--titlefont "shadow=true, size=20" \
+		--progress "100" \
+		--progresstext "Installing MDM Profile" \
+		--height "500" \
+		--width "500" \
+		--position "bottomright" \
+		--activate "true" \
+		&
 
 		#Make safari the front most app
 		osascript -e 'tell application "Safari" to activate'
@@ -485,6 +506,27 @@ function InstallCACertandMDMProfile() {
 			fi
 			sleep 3
 		done
+
+				DialogUpdate "quit:"
+		DialogBinary="/usr/local/bin/dialog"  
+	
+		$DialogBinary \
+		--title "UVA Jamf Manual Enrollment" \
+		--messagefont "size=16" \
+		--icon "none" \
+		--image "https://github.com/uvaitsei/JamfImages/blob/main/SCREENSHOTS/Enrollment/Install%20MDM%20Profile%20Device%20Management%20Window%201.jpg?raw=true" \
+		--infotext "$ScriptName Version : $ScriptVersion" \
+		--button1disabled "true" \
+		--commandfile "$SwiftCommandFile" \
+		--titlefont "shadow=true, size=20" \
+		--progress "100" \
+		--progresstext "Installing MDM Profile" \
+		--height "500" \
+		--width "500" \
+		--position "bottomright" \
+		--activate "true" \
+		&
+
 		#Open system settings to device management
 		DialogUpdate "progresstext: Please use system settings to complete MDM Profile Install"
 		open "x-apple.systempreferences:com.apple.Profiles-Settings.extension"
@@ -506,7 +548,24 @@ function InstallCACertandMDMProfile() {
 		if [[ "$MDMProfile" == "True" ]]; then
 			UpdateScriptLog "MDM PROFILE: MDM profile successfully installed."
 			DialogUpdate "progresstext: MDM profile successfully installed."
-			sleep 5 
+
+			$DialogBinary \
+			--title "UVA Jamf Manual Enrollment" \
+			--messagefont "size=16" \
+			--icon "none" \
+			--image "https://github.com/uvaitsei/JamfImages/blob/main/ICONS/COMMON-UVA-USER-ICON.png?raw=true" \
+			--infotext "$ScriptName Version : $ScriptVersion" \
+			--button1disabled "true" \
+			--commandfile "$SwiftCommandFile" \
+			--titlefont "shadow=true, size=20" \
+			--progress "100" \
+			--progresstext "UVA Enterprise Jamf Enrollment Complete" \
+			--height "500" \
+			--width "500" \
+			--position "bottomright" \
+			--activate "true" \
+			&
+			sleep 10
 			CleanUp
 		else
 			UpdateScriptLog "MDM PROFILE: MDM profile could not be found after 10 minutes."
