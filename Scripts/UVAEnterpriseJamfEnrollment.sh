@@ -678,41 +678,6 @@ function CheckFilesNeeded() {
 }
 
 
-###########################################################################
-# Check for System Support Variables
-###########################################################################
-function CheckSystemSupportVariables() {
-	
-	SystemSupport="/Library/Managed Preferences/uva.enterprisejamfsystem.com.plist"
-
-	if test -f "$SystemSupport"
-	then
-		UpdateScriptLog "SYSTEM SUPPORT VARIABLES CHECK: $SystemSupport Detected"
-		#JAMF VARIABLES
-		URL=$(defaults read "$SystemSupport" JSSURL 2>/dev/null)
-		JAMFBINARY=$(defaults read "$SystemSupport" JAMFBINARY 2>/dev/null)
-		JSSID=$(defaults read "$SystemSupport" JSSID 2>/dev/null)
-
-		UpdateScriptLog "SYSTEM SUPPORT VARIABLES CHECK:: Found JSSURL for this device: $URL"
-		UpdateScriptLog "SYSTEM SUPPORT VARIABLES CHECK:: Found JAMFBINARY for this device: $JAMFBINARY"
-		UpdateScriptLog "SYSTEM SUPPORT VARIABLES CHECK:: Found JSSID for this device: $JSSID"
-
-		#API VARIABLES
-		Salt=$(defaults read "$SystemSupport" APIComputerRenameSalt 2>/dev/null)
-		#UpdateScriptLog "SYSTEM SUPPORT VARIABLES CHECK:: Found APIComputerRenameSalt for this device: $Salt"
-
-		#BRANDING VARIABLES
-		BannerImage=$(defaults read "$SystemSupport" BannerImage 2>/dev/null)
-		IconImage=$(defaults read "$SystemSupport" IconImage 2>/dev/null)
-	else
-		UpdateScriptLog "SYSTEM SUPPORT VARIABLES CHECK: No System Support Variables Detected Use Default Setting"
-		URL="Not Found"
-		JAMFBINARY="/usr/local/bin/jamf"
-		JSSID="Not Found"
-	fi
-}
-
-
 
 ###########################################################################
 # Function: Confirm script is running as root
@@ -1168,17 +1133,16 @@ CreateLogFile
 UpdateScriptLog "SCRIPT HEADER: $Title - $ScriptName - Version: $ScriptVersion : Start"
 CreateSwiftDialogCommandFile
 EnableCaffeinate
-CheckSystemSupportVariables
 RootCheck
 WaitForSetupAssistant
 WaitForFinder
 CurrentLoggedInUser
 SwiftDialogCheck
 
-##Script Functions
-JamfEnrollmentStatus
 #Check Needed Files
 CheckFilesNeeded
+##Script Functions
+JamfEnrollmentStatus
 
 #Check for Apple School Manager Device Service to determine if Automated Enrollment or Manual Enrollment	
 ASMDeviceServiceLookup
