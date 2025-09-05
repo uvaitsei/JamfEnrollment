@@ -1037,11 +1037,11 @@ function JamfManualEnrollmentDisplay() {
 	DialogVersion=$( /usr/local/bin/dialog --version )
 	UpdateScriptLog "SWIFT DIALOG DISPLAY: Swift Dialog Version: $DialogVersion"
 
-	EnrollmentInfo="Follow the prompted instructions to complete the manual enrollment process. n/n/ \
-	This computer will be enrolled in n/n/ \
-	Organization: $SiteDisplayName n/n/ \
-	Site Name: $SiteName n/n/ \
-	Using this Enrollment Invitation: $SiteEnrollmentInvitation"
+	EnrollmentInfo="Follow the prompted instructions to complete the manual enrollment process. \
+	\nThis computer will be enrolled in\
+	\nOrganization: $SiteDisplayName \
+	\nSite Name: $SiteName  \
+	\nUsing this Enrollment Invitation: $SiteEnrollmentInvitation"
 
 	DialogBinary="/usr/local/bin/dialog"  
 
